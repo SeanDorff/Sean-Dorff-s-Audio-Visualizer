@@ -19,7 +19,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         protected override void OnLoad()
         {
             InitGL();
-            camera = new Camera(Vector3.UnitZ, Size.X / Size.Y);
+            InitCamera();
 
             // construct vertex shader
 
@@ -52,6 +52,14 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc((BlendingFactor)BlendingFactorSrc.SrcAlpha, (BlendingFactor)BlendingFactorDest.OneMinusSrcAlpha);
+            }
+        }
+
+        private void InitCamera()
+        {
+            using (new DisposableStopwatch("Iniatilizing camera"))
+            {
+                camera = new Camera(Vector3.UnitZ, Size.X / Size.Y);
             }
         }
     }

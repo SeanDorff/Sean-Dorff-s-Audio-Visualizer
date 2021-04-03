@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sean Dorff's Audio Visualiz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{3E2881C4-8E3E-449B-9FC0-3D76446E5E0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasAPI", "WasAPI\WasAPI.csproj", "{C4DAC2A7-CD98-4465-9F98-A21877114E2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3E2881C4-8E3E-449B-9FC0-3D76446E5E0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E2881C4-8E3E-449B-9FC0-3D76446E5E0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E2881C4-8E3E-449B-9FC0-3D76446E5E0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4DAC2A7-CD98-4465-9F98-A21877114E2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4DAC2A7-CD98-4465-9F98-A21877114E2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4DAC2A7-CD98-4465-9F98-A21877114E2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4DAC2A7-CD98-4465-9F98-A21877114E2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
