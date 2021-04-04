@@ -6,6 +6,10 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
+using System.Diagnostics;
+
+using WasAPI;
+
 namespace Sean_Dorff_s_Audio_Visualizer
 {
     public class SDAV_Window : GameWindow
@@ -13,6 +17,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private Camera camera;
         private bool isFullScreen = false;
         private readonly Vector2i originalSize;
+
+        private WasAPIAudio wasAPIAudio;
+        private float[] spectrumData;
+        private int spectrumBars = 64;
+        private int minFrequency = 20;
+        private int maxFrequency = 20000;
 
         public SDAV_Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -24,6 +34,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             InitGL();
             InitCamera();
+            InitWasAPIAudio();
 
             // construct vertex shader
 
@@ -32,8 +43,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (!IsFocused)
-                return;
+            GetCurrentSpectrumData();
 
             var input = KeyboardState;
 
@@ -56,8 +66,19 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
+        private void GetCurrentSpectrumData()
+        {
+            using (new DisposableStopwatch("Getting current spectrum data", true))
+            {
+                if (spectrumData != null)
+                    if (spectrumData.Length > 0)
+                        Debug.WriteLine(spectrumData.Length);
+            }
+        }
+
         protected override void OnUnload()
         {
+            wasAPIAudio.StopListen();
             base.OnUnload();
         }
 
@@ -97,6 +118,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch("Iniatilizing camera", true))
             {
                 camera = new Camera(Vector3.UnitZ, Size.X / Size.Y);
+            }
+        }
+
+        private void InitWasAPIAudio()
+        {
+            using (new DisposableStopwatch("Initializing WasAPIAudio", true))
+            {
+                wasAPIAudio = new WasAPIAudio(spectrumBars, minFrequency, maxFrequency, spectrumData => { this.spectrumData = spectrumData; });
+                wasAPIAudio.StartListen();
             }
         }
     }
