@@ -50,12 +50,12 @@ namespace WasAPI
 
             capture.Start();
 
-            var sampleSource = soundInSource.ToSampleSource();
+            ISampleSource sampleSource = soundInSource.ToSampleSource();
 
             singleBlockNotificationStream = new SingleBlockNotificationStream(sampleSource);
             realtimeSource = singleBlockNotificationStream.ToWaveSource();
 
-            var buffer = new byte[realtimeSource.WaveFormat.BytesPerSecond / 2];
+            byte[] buffer = new byte[realtimeSource.WaveFormat.BytesPerSecond / 32];
 
             soundInSource.DataAvailable += (s, ea) =>
             {
