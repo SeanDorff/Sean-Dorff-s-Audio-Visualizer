@@ -239,13 +239,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 spectrumBarShader = new Shader("Shaders/spectrumBar.vert", "Shaders/spectrumBar.frag");
                 spectrumBarShader.Use();
 
-                var vertexLocation = spectrumBarShader.GetAttribLocation("aPosition");
-                GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
-                GL.EnableVertexAttribArray(vertexLocation);
+                SetVertexAttribPointerAndArray("aPosition", 3, 7 * sizeof(float), 0);
+                SetVertexAttribPointerAndArray("aColor", 4, 7 * sizeof(float), 3 * sizeof(float));
+            }
 
-                var colorLocation = spectrumBarShader.GetAttribLocation("aColor");
-                GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, 7 * sizeof(float), 3 * sizeof(float));
-                GL.EnableVertexAttribArray(colorLocation);
+            void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
+            {
+                int location = spectrumBarShader.GetAttribLocation(attribute);
+                GL.VertexAttribPointer(location, size, VertexAttribPointerType.Float, false, stride, offset);
+                GL.EnableVertexAttribArray(location);
             }
         }
 
