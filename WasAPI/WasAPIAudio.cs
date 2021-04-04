@@ -9,7 +9,7 @@ namespace WasAPI
 {
     public class WasAPIAudio : IDisposable
     {
-        private const FftSize C_FftSize = FftSize.Fft4096;
+        private const FftSize C_FftSize = FftSize.Fft16384;
         private const float maxAudioValue = 1.0f;
 
         private readonly int spectrumSize;

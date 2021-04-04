@@ -8,6 +8,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         public Vector3 LowerRight;
         public Vector3 UpperLeft;
         public Vector3 UpperRight;
-        public Color4 Color;
+        public Vector4 Color;
     }
 }

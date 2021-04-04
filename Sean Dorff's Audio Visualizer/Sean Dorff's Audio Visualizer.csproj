@@ -15,4 +15,13 @@
     <ProjectReference Include="..\WasAPI\WasAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Shaders\spectrumBar.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Shaders\spectrumBar.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
