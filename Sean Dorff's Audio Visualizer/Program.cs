@@ -7,7 +7,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
     {
         static void Main()
         {
-
             var nativeWindowSettings = new NativeWindowSettings()
             {
                 Size = new Vector2i(920, 500),
