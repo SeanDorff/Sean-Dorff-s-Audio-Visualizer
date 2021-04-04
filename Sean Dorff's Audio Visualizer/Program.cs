@@ -14,10 +14,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 Title = "Sean Dorff's Audio Visualizer"
             };
 
-            using (SDAV_Window sdavWindow = new(GameWindowSettings.Default, nativeWindowSettings))
-            {
-                sdavWindow.Run();
-            }
+            using SDAV_Window sdavWindow = new(GameWindowSettings.Default, nativeWindowSettings);
+            sdavWindow.Run();
         }
     }
 }

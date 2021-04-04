@@ -19,7 +19,7 @@ namespace WasAPI
         private readonly WasapiCapture capture = new WasapiLoopbackCapture();
         private SoundInSource soundInSource;
         private BasicSpectrumProvider basicSpectrumProvider;
-        private Action<float[]> receiveAudio;
+        private readonly Action<float[]> receiveAudio;
         private LineSpectrum lineSpectrum;
         private SingleBlockNotificationStream singleBlockNotificationStream;
         private IWaveSource realtimeSource;

@@ -18,12 +18,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private WasAPIAudio wasAPIAudio;
         private float[] spectrumData;
-        private int spectrumBarCount = 1024;
-        private int minFrequency = 20;
-        private int maxFrequency = 20000;
+        private readonly int spectrumBarCount = 1024;
+        private readonly int minFrequency = 20;
+        private readonly int maxFrequency = 20000;
         private Vector2[] chunkBorders;
 
-        private int spectrumBarGenerations = 1;
+        private readonly int spectrumBarGenerations = 1;
         private SpectrumBar[,] spectrumBars;
 
         private float[] spectrumBarVertexes;
@@ -45,7 +45,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             InitCamera();
             InitWasAPIAudio();
 
-            chunkBorders = splitRange(spectrumBarCount, -1.0f, 1.0f);
+            chunkBorders = SplitRange(spectrumBarCount, -1.0f, 1.0f);
             spectrumBarVertexes = new float[spectrumBarCount * ((4 * 3) + (4 * 4))];
             spectrumBarVertexIndexes = new uint[2 * 3 * spectrumBarCount];
 
@@ -174,7 +174,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             base.OnUnload();
         }
 
-        private Vector2[] splitRange(int chunks, float min, float max)
+        private static Vector2[] SplitRange(int chunks, float min, float max)
         {
             Vector2[] result = new Vector2[chunks];
             float size = (max - min) / chunks;

@@ -17,9 +17,9 @@ namespace WasAPI
         private int _fftSize;
         private bool _isXLogScale;
         private int _maxFftIndex;
-        private int _minFrequency;
+        private readonly int _minFrequency;
         private int _minimumFrequencyIndex;
-        private int _maxFrequency;
+        private readonly int _maxFrequency;
         private int _maximumFrequencyIndex;
         private int[] _spectrumIndexMax;
         private int[] _spectrumLogScaleIndexMax;
@@ -98,8 +98,8 @@ namespace WasAPI
 
             if (actualResolution > 0)
             {
-                _spectrumIndexMax[_spectrumIndexMax.Length - 1] =
-                    _spectrumLogScaleIndexMax[_spectrumLogScaleIndexMax.Length - 1] = _maximumFrequencyIndex;
+                _spectrumIndexMax[^1] =
+                    _spectrumLogScaleIndexMax[^1] = _maximumFrequencyIndex;
             }
         }
 

@@ -8,7 +8,7 @@ namespace WasAPI
     class BasicSpectrumProvider : FftProvider, ISpectrumProvider
     {
         private readonly int sampleRate;
-        private readonly List<object> contexts = new List<object>();
+        private readonly List<object> contexts = new();
 
         public BasicSpectrumProvider(int channels, int sampleRate, FftSize fftSize) : base(channels, fftSize)
         {
