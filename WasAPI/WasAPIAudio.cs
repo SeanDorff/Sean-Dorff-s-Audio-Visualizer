@@ -75,7 +75,8 @@ namespace WasAPI
 
         public void StopListen()
         {
-            capture.Stop();
+            if (capture.RecordingState == RecordingState.Recording)
+                capture.Stop();
             capture.Dispose();
         }
 
