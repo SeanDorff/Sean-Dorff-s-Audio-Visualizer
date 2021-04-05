@@ -6,6 +6,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
 {
     internal class SpectrumBarShader : AbstractShader
     {
+        public float[] SpectrumBarVertexes;
+        public uint[] SpectrumBarVertexIndexes;
+
         public void Unload()
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexArrayHandle);

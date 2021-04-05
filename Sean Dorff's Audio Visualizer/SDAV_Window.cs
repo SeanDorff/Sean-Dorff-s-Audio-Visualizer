@@ -21,14 +21,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly uint spectrumBarCount = 1024;
         private readonly int minFrequency = 20;
         private readonly int maxFrequency = 20000;
-        private Vector2[] chunkBorders;
+        private readonly Vector2[] chunkBorders;
 
-        private readonly uint spectrumBarGenerations = 5;
+        private readonly uint spectrumBarGenerations = 20;
         private SpectrumBar[,] spectrumBars;
 
-        private float[] spectrumBarVertexes;
-        private uint[] spectrumBarVertexIndexes;
-        private SpectrumBarShader spectrumBarShader;
+        private SpectrumBarShader[] spectrumBarShaders;
 
         private double time;
         private bool mouseFirstMove = true;
@@ -38,6 +36,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             : base(gameWindowSettings, nativeWindowSettings)
         {
             originalSize = nativeWindowSettings.Size;
+            chunkBorders = SplitRange(spectrumBarCount, -1.0f, 1.0f);
         }
 
         protected override void OnLoad()
@@ -48,12 +47,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             CursorGrabbed = true;
 
-            chunkBorders = SplitRange(spectrumBarCount, -1.0f, 1.0f);
-            spectrumBarVertexes = new float[spectrumBarCount * ((4 * 3) + (4 * 4)) * spectrumBarGenerations];
-            spectrumBarVertexIndexes = new uint[2 * 3 * spectrumBarCount * spectrumBarGenerations];
             InitSpectrumBars();
-
-            BuildShader();
+            BuildShaders();
 
             base.OnLoad();
         }
@@ -84,10 +79,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     for (int j = 0; j < spectrumBarCount; j++)
                     {
                         spectrumBars[i, j] = spectrumBars[i - 1, j];
-                        spectrumBars[i, j].LowerLeft.Z = spectrumBars[i, j].LowerLeft.Z + 0.1f;
-                        spectrumBars[i, j].LowerRight.Z = spectrumBars[i, j].LowerRight.Z + 0.1f;
-                        spectrumBars[i, j].UpperLeft.Z = spectrumBars[i, j].UpperLeft.Z + 0.1f;
-                        spectrumBars[i, j].UpperRight.Z = spectrumBars[i, j].UpperRight.Z + 0.1f;
+                        spectrumBars[i, j].LowerLeft.Z = spectrumBars[i, j].LowerLeft.Z - 0.05f;
+                        spectrumBars[i, j].LowerRight.Z = spectrumBars[i, j].LowerRight.Z - 0.05f;
+                        spectrumBars[i, j].UpperLeft.Z = spectrumBars[i, j].UpperLeft.Z - 0.05f;
+                        spectrumBars[i, j].UpperRight.Z = spectrumBars[i, j].UpperRight.Z - 0.05f;
                     }
 
                 for (int i = 0; i < spectrumBarCount; i++)
@@ -103,44 +98,44 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 }
 
                 int stride = 4 * 3 + 4 * 4;
-                for (int j = 0; j < spectrumBarGenerations; j++)
-                    for (int i = 0; i < spectrumBarCount; i++)
+                for (int generation = 0; generation < spectrumBarGenerations; generation++)
+                    for (int bar = 0; bar < spectrumBarCount; bar++)
                     {
-                        SpectrumBar spectrumBar = spectrumBars[j, i];
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride] = spectrumBar.LowerLeft.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 1] = spectrumBar.LowerLeft.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 2] = spectrumBar.LowerLeft.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 3] = spectrumBar.Color.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 4] = spectrumBar.Color.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 5] = spectrumBar.Color.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 6] = spectrumBar.Color.W;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 7] = spectrumBar.LowerRight.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 8] = spectrumBar.LowerRight.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 9] = spectrumBar.LowerRight.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 10] = spectrumBar.Color.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 11] = spectrumBar.Color.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 12] = spectrumBar.Color.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 13] = spectrumBar.Color.W;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 14] = spectrumBar.UpperLeft.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 15] = spectrumBar.UpperLeft.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 16] = spectrumBar.UpperLeft.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 17] = spectrumBar.Color.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 18] = spectrumBar.Color.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 19] = spectrumBar.Color.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 20] = spectrumBar.Color.W;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 21] = spectrumBar.UpperRight.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 22] = spectrumBar.UpperRight.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 23] = spectrumBar.UpperRight.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 24] = spectrumBar.Color.X;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 25] = spectrumBar.Color.Y;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 26] = spectrumBar.Color.Z;
-                        spectrumBarVertexes[j * spectrumBarGenerations * stride + i * stride + 27] = spectrumBar.Color.W;
-                        spectrumBarVertexIndexes[j * spectrumBarCount * 6 + i * 6] = (uint)i * 4 + (uint)j * spectrumBarCount;
-                        spectrumBarVertexIndexes[j * spectrumBarCount * 6 + i * 6 + 1] = (uint)i * 4 + 1 + (uint)j * spectrumBarCount;
-                        spectrumBarVertexIndexes[j * spectrumBarCount * 6 + i * 6 + 2] = (uint)i * 4 + 2 + (uint)j * spectrumBarCount;
-                        spectrumBarVertexIndexes[j * spectrumBarCount * 6 + i * 6 + 3] = (uint)i * 4 + 1 + (uint)j * spectrumBarCount;
-                        spectrumBarVertexIndexes[j * spectrumBarCount * 6 + i * 6 + 4] = (uint)i * 4 + 2 + (uint)j * spectrumBarCount;
-                        spectrumBarVertexIndexes[j * spectrumBarCount * 6 + i * 6 + 5] = (uint)i * 4 + 3 + (uint)j * spectrumBarCount;
+                        SpectrumBar spectrumBar = spectrumBars[generation, bar];
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride] = spectrumBar.LowerLeft.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 1] = spectrumBar.LowerLeft.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 2] = spectrumBar.LowerLeft.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 3] = spectrumBar.Color.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 4] = spectrumBar.Color.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 5] = spectrumBar.Color.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 6] = spectrumBar.Color.W;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 7] = spectrumBar.LowerRight.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 8] = spectrumBar.LowerRight.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 9] = spectrumBar.LowerRight.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 10] = spectrumBar.Color.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 11] = spectrumBar.Color.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 12] = spectrumBar.Color.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 13] = spectrumBar.Color.W;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 14] = spectrumBar.UpperLeft.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 15] = spectrumBar.UpperLeft.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 16] = spectrumBar.UpperLeft.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 17] = spectrumBar.Color.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 18] = spectrumBar.Color.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 19] = spectrumBar.Color.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 20] = spectrumBar.Color.W;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 21] = spectrumBar.UpperRight.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 22] = spectrumBar.UpperRight.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 23] = spectrumBar.UpperRight.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 24] = spectrumBar.Color.X;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 25] = spectrumBar.Color.Y;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 26] = spectrumBar.Color.Z;
+                        spectrumBarShaders[generation].SpectrumBarVertexes[bar * stride + 27] = spectrumBar.Color.W;
+                        spectrumBarShaders[generation].SpectrumBarVertexIndexes[bar * 6] = (uint)bar * 4;
+                        spectrumBarShaders[generation].SpectrumBarVertexIndexes[bar * 6 + 1] = (uint)bar * 4 + 1;
+                        spectrumBarShaders[generation].SpectrumBarVertexIndexes[bar * 6 + 2] = (uint)bar * 4 + 2;
+                        spectrumBarShaders[generation].SpectrumBarVertexIndexes[bar * 6 + 3] = (uint)bar * 4 + 1;
+                        spectrumBarShaders[generation].SpectrumBarVertexIndexes[bar * 6 + 4] = (uint)bar * 4 + 2;
+                        spectrumBarShaders[generation].SpectrumBarVertexIndexes[bar * 6 + 5] = (uint)bar * 4 + 3;
                     }
 
                 float deNullifiedSpectrumData(int i) => (spectrumData != null) ? spectrumData[i] : 0.0f;
@@ -155,21 +150,27 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 if (time > MathHelper.TwoPi)
                     time -= MathHelper.TwoPi;
 
-                UpdateSpectrumBars();
-                SendSpectrumBarData();
+                Matrix4 model = Matrix4.Identity;
+                Matrix4 view = camera.GetViewMatrix();
+                Matrix4 projection = camera.GetProjectionMatrix();
 
+                UpdateSpectrumBars();
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                spectrumBarShader.Shader.Use();
-                GL.BindVertexArray(spectrumBarShader.VertexArrayHandle);
 
-                var model = Matrix4.Identity;
+                for (int shaderNo = 0; shaderNo < spectrumBarGenerations; shaderNo++)
+                {
+                    SendSpectrumBarData(shaderNo);
 
-                spectrumBarShader.Shader.SetMatrix4("model", model);
-                spectrumBarShader.Shader.SetMatrix4("view", camera.GetViewMatrix());
-                spectrumBarShader.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+                    spectrumBarShaders[shaderNo].Shader.Use();
+                    GL.BindVertexArray(spectrumBarShaders[shaderNo].VertexArrayHandle);
 
-                GL.DrawElements(PrimitiveType.Triangles, spectrumBarVertexIndexes.Length, DrawElementsType.UnsignedInt, 0);
+                    spectrumBarShaders[shaderNo].Shader.SetMatrix4("model", model);
+                    spectrumBarShaders[shaderNo].Shader.SetMatrix4("view", view);
+                    spectrumBarShaders[shaderNo].Shader.SetMatrix4("projection", projection);
+
+                    GL.DrawElements(PrimitiveType.Triangles, spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes.Length, DrawElementsType.UnsignedInt, 0);
+                }
 
                 SwapBuffers();
 
@@ -262,7 +263,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
         protected override void OnUnload()
         {
             wasAPIAudio.StopListen();
-            spectrumBarShader.Unload();
+            for (int shaderNo = 0; shaderNo < spectrumBarGenerations; shaderNo++)
+                spectrumBarShaders[shaderNo].Unload();
             base.OnUnload();
         }
 
@@ -316,21 +318,35 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
-        private void BuildShader()
+        private void BuildShaders()
         {
-            using (new DisposableStopwatch("BuildShader", true))
+            using (new DisposableStopwatch("BuildShaders", true))
             {
-                spectrumBarShader = new();
-                spectrumBarShader.VertexArrayHandle = GL.GenVertexArray();
-                GL.BindVertexArray(spectrumBarShader.VertexArrayHandle);
+                spectrumBarShaders = new SpectrumBarShader[spectrumBarGenerations];
+                for (int generation = 0; generation < spectrumBarGenerations; generation++)
+                    BuildShader(generation);
+            }
+        }
 
-                spectrumBarShader.VertexBufferHandle = GL.GenBuffer();
-                spectrumBarShader.ElementBufferHandle = GL.GenBuffer();
+        private void BuildShader(int shaderNo)
+        {
+            using (new DisposableStopwatch("BuildShader (shaderNo: " + shaderNo + ")", true))
+            {
+                spectrumBarShaders[shaderNo] = new();
 
-                SendSpectrumBarData();
+                spectrumBarShaders[shaderNo].SpectrumBarVertexes = new float[spectrumBarCount * ((4 * 3) + (4 * 4))];
+                spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes = new uint[2 * 3 * spectrumBarCount];
 
-                spectrumBarShader.Shader = new Shader("Shaders/spectrumBar.vert", "Shaders/spectrumBar.frag");
-                spectrumBarShader.Shader.Use();
+                spectrumBarShaders[shaderNo].VertexArrayHandle = GL.GenVertexArray();
+                GL.BindVertexArray(spectrumBarShaders[shaderNo].VertexArrayHandle);
+
+                spectrumBarShaders[shaderNo].VertexBufferHandle = GL.GenBuffer();
+                spectrumBarShaders[shaderNo].ElementBufferHandle = GL.GenBuffer();
+
+                SendSpectrumBarData(shaderNo);
+
+                spectrumBarShaders[shaderNo].Shader = new Shader("Shaders/spectrumBar.vert", "Shaders/spectrumBar.frag");
+                spectrumBarShaders[shaderNo].Shader.Use();
 
                 SetVertexAttribPointerAndArray("aPosition", 3, 7 * sizeof(float), 0);
                 SetVertexAttribPointerAndArray("aColor", 4, 7 * sizeof(float), 3 * sizeof(float));
@@ -338,21 +354,21 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
             {
-                int location = spectrumBarShader.Shader.GetAttribLocation(attribute);
+                int location = spectrumBarShaders[shaderNo].Shader.GetAttribLocation(attribute);
                 GL.VertexAttribPointer(location, size, VertexAttribPointerType.Float, false, stride, offset);
                 GL.EnableVertexAttribArray(location);
             }
         }
 
-        private void SendSpectrumBarData()
+        private void SendSpectrumBarData(int shaderNo)
         {
             using (new DisposableStopwatch("SendSpectrumBarData", true))
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, spectrumBarShader.VertexBufferHandle);
-                GL.BufferData(BufferTarget.ArrayBuffer, spectrumBarVertexes.Length * sizeof(float), spectrumBarVertexes, BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, spectrumBarShaders[shaderNo].VertexBufferHandle);
+                GL.BufferData(BufferTarget.ArrayBuffer, spectrumBarShaders[shaderNo].SpectrumBarVertexes.Length * sizeof(float), spectrumBarShaders[shaderNo].SpectrumBarVertexes, BufferUsageHint.StreamDraw);
 
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, spectrumBarShader.ElementBufferHandle);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, spectrumBarVertexIndexes.Length * sizeof(uint), spectrumBarVertexIndexes, BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, spectrumBarShaders[shaderNo].ElementBufferHandle);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes.Length * sizeof(uint), spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes, BufferUsageHint.StreamDraw);
             }
         }
 
