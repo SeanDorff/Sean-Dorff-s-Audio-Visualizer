@@ -262,6 +262,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         protected override void OnUnload()
         {
             wasAPIAudio.StopListen();
+            spectrumBarShader.Unload();
             base.OnUnload();
         }
 
