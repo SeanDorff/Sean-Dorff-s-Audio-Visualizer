@@ -8,5 +8,5 @@ Press Esc to quit the program.
 
 # NuGet packages
 This solution uses two NuGet packages:
-- OpenTK - [https://github.com/opentk/opentk]
-- CSCore - [https://github.com/filoe/cscore]
+- [OpenTK](https://github.com/opentk/opentk)
+- [CSCore](https://github.com/filoe/cscore)
