@@ -8,6 +8,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using WasAPI;
 
@@ -24,7 +25,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly uint spectrumBarCount = 1024;
         private readonly int minFrequency = 20;
         private readonly int maxFrequency = 20000;
-        private readonly Vector2[] chunkBorders;
+        private readonly Vector2[] barBorders;
 
         private readonly uint spectrumBarGenerations = 150;
         private SpectrumBar[,] spectrumBars;
@@ -40,26 +41,29 @@ namespace Sean_Dorff_s_Audio_Visualizer
             : base(gameWindowSettings, nativeWindowSettings)
         {
             originalSize = nativeWindowSettings.Size;
-            chunkBorders = SplitRange(spectrumBarCount, -1.0f, 1.0f);
+            barBorders = SplitRange(spectrumBarCount, -1.0f, 1.0f);
         }
 
         protected override void OnLoad()
         {
-            InitGL();
-            InitCamera();
-            InitWasAPIAudio();
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+            {
+                InitGL();
+                InitCamera();
+                InitWasAPIAudio();
 
-            CursorGrabbed = true;
+                CursorGrabbed = true;
 
-            InitSpectrumBars();
-            BuildShaders();
+                InitSpectrumBars();
+                BuildShaders();
 
-            base.OnLoad();
+                base.OnLoad();
+            }
         }
 
         private void InitSpectrumBars()
         {
-            using (new DisposableStopwatch("InitSpectrumBars", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 spectrumBars = new SpectrumBar[spectrumBarGenerations, spectrumBarCount * 2 * 3 * 2];
                 for (int i = 0; i < spectrumBarGenerations; i++)
@@ -77,7 +81,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void UpdateSpectrumBars()
         {
-            using (new DisposableStopwatch("UpdateSpectrumBars", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 MoveBarGenerations();
                 AddCurrentSpectrum();
@@ -110,10 +114,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 for (int bar = 0; bar < spectrumBarCount; bar++)
                     spectrumBars[0, bar] = new SpectrumBar()
                     {
-                        LowerLeft = new Vector3(chunkBorders[bar].X, 0, 0),
-                        LowerRight = new Vector3(chunkBorders[bar].Y, 0, 0),
-                        UpperLeft = new Vector3(chunkBorders[bar].X, deNullifiedSpectrumData(bar), 0),
-                        UpperRight = new Vector3(chunkBorders[bar].Y, deNullifiedSpectrumData(bar), 0),
+                        LowerLeft = new Vector3(barBorders[bar].X, 0, 0),
+                        LowerRight = new Vector3(barBorders[bar].Y, 0, 0),
+                        UpperLeft = new Vector3(barBorders[bar].X, deNullifiedSpectrumData(bar), 0),
+                        UpperRight = new Vector3(barBorders[bar].Y, deNullifiedSpectrumData(bar), 0),
                         Color = new Vector4(barOfBarCount(bar), 1 - barOfBarCount(bar), 1, 0.75f)
                     };
 
@@ -178,7 +182,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             void SortVerticesByCameraDistance()
             {
-                Dictionary<uint, float> distances = new Dictionary<uint, float>();
+                Dictionary<uint, float> distances = new();
                 for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                 {
                     for (int generation = 0; generation < generationsPerShader; generation++)
@@ -206,7 +210,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            using (new DisposableStopwatch("OnRenderFrame", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 time += e.Time;
                 if (time > MathHelper.TwoPi)
@@ -241,7 +245,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            using (new DisposableStopwatch("OnUpdateFrame", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 if (IsFocused)
                 {
@@ -307,7 +311,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         protected override void OnResize(ResizeEventArgs e)
         {
-            using (new DisposableStopwatch("OnResize", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 GL.Viewport(0, 0, e.Width, e.Height);
                 camera.AspectRatio = Size.X / (float)Size.Y;
@@ -342,7 +346,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void ToggleFullscreen()
         {
-            using (new DisposableStopwatch("ToggleFullscreen", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 if (isFullScreen)
                 {
@@ -362,7 +366,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private static void InitGL()
         {
-            using (new DisposableStopwatch("InitGL", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 GL.Enable(EnableCap.DepthTest);
@@ -374,7 +378,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void InitCamera()
         {
-            using (new DisposableStopwatch("InitCamera", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 camera = new Camera(new Vector3(0, (Vector3.UnitY.Y / 2), Vector3.UnitZ.Z), Size.X / Size.Y);
             }
@@ -382,7 +386,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void BuildShaders()
         {
-            using (new DisposableStopwatch("BuildShaders", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 spectrumBarShaders = new SpectrumBarShader[spectrumBarGenerations / generationsPerShader];
                 for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
@@ -392,7 +396,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void BuildShader(int shaderNo)
         {
-            using (new DisposableStopwatch("BuildShader (shaderNo: " + shaderNo + ")", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name + " (shaderNo: " + shaderNo + ")", true))
             {
                 spectrumBarShaders[shaderNo] = new();
 
@@ -424,7 +428,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void SendSpectrumBarData(int shaderNo)
         {
-            using (new DisposableStopwatch("SendSpectrumBarData", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, spectrumBarShaders[shaderNo].VertexBufferHandle);
                 GL.BufferData(BufferTarget.ArrayBuffer, spectrumBarShaders[shaderNo].SpectrumBarVertexes.Length * sizeof(float), spectrumBarShaders[shaderNo].SpectrumBarVertexes, BufferUsageHint.StreamDraw);
@@ -436,7 +440,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void InitWasAPIAudio()
         {
-            using (new DisposableStopwatch("InitWasAPIAudio", true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 wasAPIAudio = new WasAPIAudio((int)spectrumBarCount, minFrequency, maxFrequency, spectrumData => { this.spectrumData = spectrumData; });
                 wasAPIAudio.StartListen();

@@ -7,10 +7,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
     {
         static void Main()
         {
-            var nativeWindowSettings = new NativeWindowSettings()
+            NativeWindowSettings nativeWindowSettings = new()
             {
-                Size = new Vector2i(920, 500),
-                Location = new Vector2i(40, 40),
+                Size = new Vector2i(920, 517),
+                Location = new Vector2i(40, 60),
                 Title = "Sean Dorff's Audio Visualizer"
             };
 
