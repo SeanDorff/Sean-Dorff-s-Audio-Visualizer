@@ -45,7 +45,7 @@ namespace WasAPI
                 BarCount = spectrumSize,
                 UseAverage = true,
                 IsXLogScale = true,
-                ScalingStrategy = EScalingStrategy.Linear
+                ScalingStrategy = EScalingStrategy.Sqrt
             };
 
             capture.Start();

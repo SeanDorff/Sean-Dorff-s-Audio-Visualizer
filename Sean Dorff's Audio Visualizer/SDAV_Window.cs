@@ -26,9 +26,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly int maxFrequency = 20000;
         private readonly Vector2[] chunkBorders;
 
-        private readonly uint spectrumBarGenerations = 100;
+        private readonly uint spectrumBarGenerations = 150;
         private SpectrumBar[,] spectrumBars;
-        private readonly uint generationsPerShader = 100;
+        private readonly uint generationsPerShader = 150;
 
         private SpectrumBarShader[] spectrumBarShaders;
 
@@ -83,11 +83,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     for (int j = 0; j < spectrumBarCount; j++)
                     {
                         spectrumBars[i, j] = spectrumBars[i - 1, j];
-                        spectrumBars[i, j].LowerLeft.Z = spectrumBars[i, j].LowerLeft.Z - 0.05f;
-                        spectrumBars[i, j].LowerRight.Z = spectrumBars[i, j].LowerRight.Z - 0.05f;
-                        spectrumBars[i, j].UpperLeft.Z = spectrumBars[i, j].UpperLeft.Z - 0.05f;
-                        spectrumBars[i, j].UpperRight.Z = spectrumBars[i, j].UpperRight.Z - 0.05f;
-                        spectrumBars[i, j].Color = new Vector4(spectrumBars[i, j].Color.Xyz, spectrumBars[i, j].Color.W * 0.99f);
+                        spectrumBars[i, j].LowerLeft.Z = spectrumBars[i, j].LowerLeft.Z - 0.1f;
+                        spectrumBars[i, j].LowerRight.Z = spectrumBars[i, j].LowerRight.Z - 0.1f;
+                        spectrumBars[i, j].UpperLeft.Z = spectrumBars[i, j].UpperLeft.Z - 0.1f;
+                        spectrumBars[i, j].UpperRight.Z = spectrumBars[i, j].UpperRight.Z - 0.1f;
+                        spectrumBars[i, j].Color = new Vector4(spectrumBars[i, j].Color.Xyz, spectrumBars[i, j].Color.W * 0.97f);
                     }
 
                 for (int i = 0; i < spectrumBarCount; i++)
@@ -98,7 +98,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         LowerRight = new Vector3(chunkBorders[i].Y, 0, 0),
                         UpperLeft = new Vector3(chunkBorders[i].X, deNullifiedSpectrumData(i), 0),
                         UpperRight = new Vector3(chunkBorders[i].Y, deNullifiedSpectrumData(i), 0),
-                        Color = new Vector4(i / (float)spectrumBarCount, 1 - (i / (float)spectrumBarCount), 1, 0.8f)
+                        Color = new Vector4(i / (float)spectrumBarCount, 1 - (i / (float)spectrumBarCount), 1, 0.75f)
                     };
                 }
 
@@ -238,7 +238,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     if (keyInput.IsKeyReleased(Keys.F))
                         ToggleFullscreen();
 
-                    const float cameraSpeed = 0.5f;
+                    const float cameraSpeed = 1.0f;
                     const float mouseSensitivity = 0.2f;
 
                     if (keyInput.IsKeyDown(Keys.W))
