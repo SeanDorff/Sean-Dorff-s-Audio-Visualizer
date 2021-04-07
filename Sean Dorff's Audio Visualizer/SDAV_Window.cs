@@ -34,7 +34,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private SpectrumBarShader[] spectrumBarShaders;
 
         private double time;
-        private bool mouseFirstMove = true;
         private Vector2 lastMousePos;
 
         public SDAV_Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -58,6 +57,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 BuildShaders();
 
                 base.OnLoad();
+
+                lastMousePos = new Vector2(MouseState.X, MouseState.Y);
             }
         }
 
@@ -237,7 +238,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                         uint[] newIndexes = new uint[spectrumBarVertexIndexes.Length];
                         uint newIndex = 0;
-                        MergeSort(ref distList);
+                        ParallelMergeSort(ref distList, 3);
                         for (int i = 0; i < distList.Length; i++)
                         {
                             newIndexes[newIndex++] = distList[i].Index;
@@ -248,6 +249,52 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             newIndexes[newIndex++] = distList[i].Index + 3;
                         }
                         spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes = newIndexes;
+                    }
+                }
+
+                void ParallelMergeSort(ref SIndexDistance[] distances, int depth)
+                {
+                    SIndexDistance[] distances1 = new SIndexDistance[distances.Length / 2];
+                    SIndexDistance[] distances2 = new SIndexDistance[distances.Length - distances1.Length];
+                    Array.Copy(distances, distances1, distances1.Length);
+                    Array.Copy(distances, distances1.Length, distances2, 0, distances2.Length);
+                    Task[] taskArray = new Task[2];
+                    if (depth == 0)
+                    {
+                        taskArray[0] = Task.Factory.StartNew(() => MergeSort(ref distances1));
+                        taskArray[1] = Task.Factory.StartNew(() => MergeSort(ref distances2));
+                    }
+                    else
+                    {
+                        taskArray[0] = Task.Factory.StartNew(() => ParallelMergeSort(ref distances1, depth - 1));
+                        taskArray[1] = Task.Factory.StartNew(() => ParallelMergeSort(ref distances2, depth - 1));
+                    }
+                    Task.WaitAll(taskArray);
+                    int distancesIndex = 0;
+                    int distances1Index = 0;
+                    int distances2Index = 0;
+                    bool d1Finished = false;
+                    bool d2Finished = false;
+                    while (!d1Finished || !d2Finished)
+                    {
+                        if (!d2Finished)
+                        {
+                            if (!d1Finished && (distances1[distances1Index].IntegerDistance >= distances2[distances2Index].IntegerDistance))
+                            {
+                                distances[distancesIndex++] = distances1[distances1Index++];
+                                d1Finished = distances1Index == distances1.Length;
+                            }
+                            else
+                            {
+                                distances[distancesIndex++] = distances2[distances2Index++];
+                                d2Finished = distances2Index == distances2.Length;
+                            }
+                        }
+                        else
+                        {
+                            distances[distancesIndex++] = distances1[distances1Index++];
+                            d1Finished = distances1Index == distances1.Length;
+                        }
                     }
                 }
 
@@ -367,25 +414,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     {
                         camera.Position -= camera.Up * cameraSpeed * (float)e.Time; // Down
                     }
-
-                    MouseState mouseInput = MouseState;
-
-                    if (mouseFirstMove) // this bool variable is initially set to true
-                    {
-                        lastMousePos = new Vector2(mouseInput.X, mouseInput.Y);
-                        mouseFirstMove = false;
-                    }
-                    else
-                    {
-                        // Calculate the offset of the mouse position
-                        var deltaX = mouseInput.X - lastMousePos.X;
-                        var deltaY = mouseInput.Y - lastMousePos.Y;
-                        lastMousePos = new Vector2(mouseInput.X, mouseInput.Y);
-
-                        // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
-                        camera.Yaw += deltaX * mouseSensitivity;
-                        camera.Pitch -= deltaY * mouseSensitivity; // reversed since y-coordinates range from bottom to top
-                    }
+                    // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
+                    camera.Yaw += (MouseState.X - MouseState.PreviousX) * mouseSensitivity;
+                    camera.Pitch -= (MouseState.Y - MouseState.PreviousY) * mouseSensitivity; // reversed since y-coordinates range from bottom to top
                 }
                 base.OnUpdateFrame(e);
             }
