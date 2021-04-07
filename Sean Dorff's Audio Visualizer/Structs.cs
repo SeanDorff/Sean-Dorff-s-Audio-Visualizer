@@ -22,4 +22,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
         public int ShaderNo;
         public int Generation;
     }
+
+    internal struct SStar
+    {
+        public Vector3 Position;
+        public float Generation;
+        public Vector4 Color;
+    }
 }

@@ -33,8 +33,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private SpectrumBarShader[] spectrumBarShaders;
 
+        private readonly uint starCount = 4096;
+        private SStar[] stars;
+
+        private StarShader starShader;
+
         private double time;
-        private float bassLoudness;
 
         public SDAV_Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -75,6 +79,21 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             UpperRight = Vector3.Zero,
                             Color = Vector4.Zero
                         };
+            }
+        }
+
+        private void InitStars()
+        {
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+            {
+                stars = new SStar[starCount];
+                for (int i = 0; i < starCount; i++)
+                    stars[i] = new SStar
+                    {
+                        Position = Vector3.Zero,
+                        Generation = 0,
+                        Color = Vector4.Zero
+                    };
             }
         }
 
@@ -440,6 +459,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             wasAPIAudio.StopListen();
             for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                 spectrumBarShaders[shaderNo].Unload();
+            starShader.Unload();
             base.OnUnload();
         }
 
@@ -500,6 +520,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 spectrumBarShaders = new SpectrumBarShader[spectrumBarGenerations / generationsPerShader];
                 for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                     BuildShader(shaderNo);
+                starShader = new StarShader(starCount);
             }
         }
 
