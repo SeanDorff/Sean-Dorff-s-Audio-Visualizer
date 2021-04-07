@@ -212,6 +212,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             void SortVerticesByCameraDistance()
             {
+                const int cTenPowSeven = 10000000;
                 using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
                 {
                     SIndexDistance[] distList = new SIndexDistance[spectrumBarGenerations * spectrumBarCount];
@@ -223,19 +224,23 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             {
                                 int generationOffset = generation * (int)spectrumBarCount * 6;
                                 uint index = spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes[generationOffset + bar * 6];
-                                distList[distListIndex++] = new SIndexDistance { Index = index, Distance = camera.Position.Z - spectrumBarShaders[shaderNo].SpectrumBarVertexes[index + 3] };
+                                distList[distListIndex++] = new SIndexDistance
+                                {
+                                    Index = index,
+                                    IntegerDistance = (int)((camera.Position.Z - spectrumBarShaders[shaderNo].SpectrumBarVertexes[index + 3]) * cTenPowSeven)
+                                };
                             }
                         uint[] newIndexes = new uint[spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes.Length];
                         uint newIndex = 0;
                         MergeSort(ref distList);
-                        foreach (SIndexDistance kvp in distList)
+                        for (int i = 0; i < distList.Length; i++)
                         {
-                            newIndexes[newIndex++] = kvp.Index;
-                            newIndexes[newIndex++] = kvp.Index + 1;
-                            newIndexes[newIndex++] = kvp.Index + 2;
-                            newIndexes[newIndex++] = kvp.Index + 1;
-                            newIndexes[newIndex++] = kvp.Index + 2;
-                            newIndexes[newIndex++] = kvp.Index + 3;
+                            newIndexes[newIndex++] = distList[i].Index;
+                            newIndexes[newIndex++] = distList[i].Index + 1;
+                            newIndexes[newIndex++] = distList[i].Index + 2;
+                            newIndexes[newIndex++] = distList[i].Index + 1;
+                            newIndexes[newIndex++] = distList[i].Index + 2;
+                            newIndexes[newIndex++] = distList[i].Index + 3;
                         }
                         spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes = newIndexes;
                     }
@@ -268,7 +273,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                             while ((left <= mid) && (rightStart <= right))
                             {
-                                if (distances[left].Distance <= distances[rightStart].Distance)
+                                if (distances[left].IntegerDistance <= distances[rightStart].IntegerDistance)
                                     temp[index++] = distances[left++];
                                 else
                                     temp[index++] = distances[rightStart++];
@@ -528,7 +533,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private struct SIndexDistance
         {
             public uint Index;
-            public float Distance;
+            public int IntegerDistance;
         }
     }
 }
