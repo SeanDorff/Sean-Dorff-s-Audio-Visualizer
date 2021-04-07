@@ -117,7 +117,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         LowerRight = new Vector3(barBorders[bar].Y, 0, 0),
                         UpperLeft = new Vector3(barBorders[bar].X, DeNullifiedSpectrumData(bar), 0),
                         UpperRight = new Vector3(barBorders[bar].Y, DeNullifiedSpectrumData(bar), 0),
-                        Color = new Vector4(0, 1 - barOfBarCount(bar), barOfBarCount(bar), 0.75f)
+                        Color = new Vector4(GetCurrentLoudness(), 1 - barOfBarCount(bar), barOfBarCount(bar), 0.75f)
                     };
 
                 float barOfBarCount(int bar) => bar / (float)spectrumBarCount;
@@ -351,8 +351,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 UpdateSpectrumBars();
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                bassLoudness = Math.Max(bassLoudness * 0.95f, GetCurrentLoudness());
-
                 for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                 {
                     spectrumBarShaders[shaderNo].SendSpectrumBarData();
@@ -361,7 +359,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     spectrumBarShaders[shaderNo].BindVertexArray();
 
                     spectrumBarShaders[shaderNo].SetModelViewProjection(camera);
-                    spectrumBarShaders[shaderNo].SetFloat("loudness", bassLoudness);
 
                     spectrumBarShaders[shaderNo].DrawElements();
                 }
