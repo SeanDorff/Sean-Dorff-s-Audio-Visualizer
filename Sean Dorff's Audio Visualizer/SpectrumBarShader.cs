@@ -48,6 +48,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         public void DrawElements() => GL.DrawElements(PrimitiveType.Triangles, SpectrumBarVertexIndexes.Length, DrawElementsType.UnsignedInt, 0);
 
+        public void SetFloat(string name, float value) => Shader.SetFloat(name, value);
+
         public void Unload()
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))

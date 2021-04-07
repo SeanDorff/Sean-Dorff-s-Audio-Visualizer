@@ -117,13 +117,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     {
                         LowerLeft = new Vector3(barBorders[bar].X, 0, 0),
                         LowerRight = new Vector3(barBorders[bar].Y, 0, 0),
-                        UpperLeft = new Vector3(barBorders[bar].X, deNullifiedSpectrumData(bar), 0),
-                        UpperRight = new Vector3(barBorders[bar].Y, deNullifiedSpectrumData(bar), 0),
-                        Color = new Vector4(barOfBarCount(bar), 1 - barOfBarCount(bar), 1, 0.75f)
+                        UpperLeft = new Vector3(barBorders[bar].X, DeNullifiedSpectrumData(bar), 0),
+                        UpperRight = new Vector3(barBorders[bar].Y, DeNullifiedSpectrumData(bar), 0),
+                        Color = new Vector4(0, 1 - barOfBarCount(bar), barOfBarCount(bar), 0.75f)
                     };
 
                 float barOfBarCount(int bar) => bar / (float)spectrumBarCount;
-                float deNullifiedSpectrumData(int i) => (spectrumData != null) ? spectrumData[i] : 0.0f;
             }
 
             void TransformToVertexes()
@@ -362,6 +361,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     spectrumBarShaders[shaderNo].BindVertexArray();
 
                     spectrumBarShaders[shaderNo].SetModelViewProjection(camera);
+                    spectrumBarShaders[shaderNo].SetFloat("loudness", GetCurrentLoudness());
 
                     spectrumBarShaders[shaderNo].DrawElements();
                 }
@@ -523,5 +523,20 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 wasAPIAudio.StartListen();
             }
         }
+
+        private float GetCurrentLoudness()
+        {
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+            {
+                const int iFraction = 15;
+                const float fFraction = iFraction;
+                float loudness = 0.0f;
+                for (int i = 0; i < spectrumBarCount / iFraction; i++)
+                    loudness += DeNullifiedSpectrumData(i);
+                return loudness / fFraction;
+            }
+        }
+
+        private float DeNullifiedSpectrumData(int i) => (spectrumData != null) ? spectrumData[i] : 0.0f;
     }
 }
