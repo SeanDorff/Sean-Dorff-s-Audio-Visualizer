@@ -28,7 +28,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly Vector2[] barBorders;
 
         private readonly uint spectrumBarGenerations = 150;
-        private SpectrumBar[,] spectrumBars;
+        private SSpectrumBar[,] spectrumBars;
         private readonly uint generationsPerShader = 150;
 
         private SpectrumBarShader[] spectrumBarShaders;
@@ -65,10 +65,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
-                spectrumBars = new SpectrumBar[spectrumBarGenerations, spectrumBarCount * 2 * 3 * 2];
+                spectrumBars = new SSpectrumBar[spectrumBarGenerations, spectrumBarCount * 2 * 3 * 2];
                 for (int i = 0; i < spectrumBarGenerations; i++)
                     for (int j = 0; j < spectrumBarCount; j++)
-                        spectrumBars[i, j] = new SpectrumBar()
+                        spectrumBars[i, j] = new SSpectrumBar()
                         {
                             LowerLeft = Vector3.Zero,
                             LowerRight = Vector3.Zero,
@@ -108,7 +108,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             void AddCurrentSpectrum()
             {
                 for (int bar = 0; bar < spectrumBarCount; bar++)
-                    spectrumBars[0, bar] = new SpectrumBar()
+                    spectrumBars[0, bar] = new SSpectrumBar()
                     {
                         LowerLeft = new Vector3(barBorders[bar].X, 0, 0),
                         LowerRight = new Vector3(barBorders[bar].Y, 0, 0),
@@ -143,7 +143,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             void TransformSpectrumToVertices(int shaderNo, int generation)
             {
                 const int stride = 4 * 3 + 4 * 4;
-                SpectrumBar spectrumBar = new();
+                SSpectrumBar spectrumBar = new();
                 int generationOffset = 0;
                 int barByStride = 0;
                 int offsetPlusBarByStride = 0;
@@ -528,18 +528,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 wasAPIAudio = new WasAPIAudio((int)spectrumBarCount, minFrequency, maxFrequency, spectrumData => { this.spectrumData = spectrumData; });
                 wasAPIAudio.StartListen();
             }
-        }
-
-        private struct SIndexDistance
-        {
-            public uint Index;
-            public int IntegerDistance;
-        }
-
-        private struct SStartParameter
-        {
-            public int ShaderNo;
-            public int Generation;
         }
     }
 }
