@@ -300,25 +300,19 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 if (time > MathHelper.TwoPi)
                     time -= MathHelper.TwoPi;
 
-                Matrix4 model = Matrix4.Identity;
-                Matrix4 view = camera.GetViewMatrix();
-                Matrix4 projection = camera.GetProjectionMatrix();
-
                 UpdateSpectrumBars();
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
                 for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                 {
-                    SendSpectrumBarData(shaderNo);
+                    spectrumBarShaders[shaderNo].SendSpectrumBarData();
 
-                    spectrumBarShaders[shaderNo].Shader.Use();
-                    GL.BindVertexArray(spectrumBarShaders[shaderNo].VertexArrayHandle);
+                    spectrumBarShaders[shaderNo].Use();
+                    spectrumBarShaders[shaderNo].BindVertexArray();
 
-                    spectrumBarShaders[shaderNo].Shader.SetMatrix4("model", model);
-                    spectrumBarShaders[shaderNo].Shader.SetMatrix4("view", view);
-                    spectrumBarShaders[shaderNo].Shader.SetMatrix4("projection", projection);
+                    spectrumBarShaders[shaderNo].SetModelViewProjection(camera);
 
-                    GL.DrawElements(PrimitiveType.Triangles, spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes.Length, DrawElementsType.UnsignedInt, 0);
+                    spectrumBarShaders[shaderNo].DrawElements();
                 }
 
                 SwapBuffers();
@@ -481,43 +475,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name + " (shaderNo: " + shaderNo + ")", true))
             {
-                spectrumBarShaders[shaderNo] = new();
+                spectrumBarShaders[shaderNo] = new(spectrumBarCount, generationsPerShader);
 
-                spectrumBarShaders[shaderNo].SpectrumBarVertexes = new float[spectrumBarCount * ((4 * 3) + (4 * 4)) * generationsPerShader];
-                spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes = new uint[2 * 3 * spectrumBarCount * generationsPerShader];
-
-                spectrumBarShaders[shaderNo].VertexArrayHandle = GL.GenVertexArray();
-                GL.BindVertexArray(spectrumBarShaders[shaderNo].VertexArrayHandle);
-
-                spectrumBarShaders[shaderNo].VertexBufferHandle = GL.GenBuffer();
-                spectrumBarShaders[shaderNo].ElementBufferHandle = GL.GenBuffer();
-
-                SendSpectrumBarData(shaderNo);
-
-                spectrumBarShaders[shaderNo].Shader = new Shader("Shaders/spectrumBar.vert", "Shaders/spectrumBar.frag");
-                spectrumBarShaders[shaderNo].Shader.Use();
-
-                SetVertexAttribPointerAndArray("aPosition", 3, 7 * sizeof(float), 0);
-                SetVertexAttribPointerAndArray("aColor", 4, 7 * sizeof(float), 3 * sizeof(float));
-            }
-
-            void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
-            {
-                int location = spectrumBarShaders[shaderNo].Shader.GetAttribLocation(attribute);
-                GL.VertexAttribPointer(location, size, VertexAttribPointerType.Float, false, stride, offset);
-                GL.EnableVertexAttribArray(location);
-            }
-        }
-
-        private void SendSpectrumBarData(int shaderNo)
-        {
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, spectrumBarShaders[shaderNo].VertexBufferHandle);
-                GL.BufferData(BufferTarget.ArrayBuffer, spectrumBarShaders[shaderNo].SpectrumBarVertexes.Length * sizeof(float), spectrumBarShaders[shaderNo].SpectrumBarVertexes, BufferUsageHint.StreamDraw);
-
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, spectrumBarShaders[shaderNo].ElementBufferHandle);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes.Length * sizeof(uint), spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes, BufferUsageHint.StreamDraw);
             }
         }
 
