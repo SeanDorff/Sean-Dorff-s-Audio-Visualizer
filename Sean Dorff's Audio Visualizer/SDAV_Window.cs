@@ -91,18 +91,22 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             void MoveBarGenerations()
             {
-                const float movement = 0.1f;
-                const float alphaDimm = 0.97f;
-                for (int generation = (int)spectrumBarGenerations - 1; generation > 0; generation--)
-                    for (int bar = 0; bar < spectrumBarCount; bar++)
-                    {
-                        spectrumBars[generation, bar] = spectrumBars[generation - 1, bar];
-                        spectrumBars[generation, bar].LowerLeft.Z -= movement;
-                        spectrumBars[generation, bar].LowerRight.Z -= movement;
-                        spectrumBars[generation, bar].UpperLeft.Z -= movement;
-                        spectrumBars[generation, bar].UpperRight.Z -= movement;
-                        spectrumBars[generation, bar].Color.W *= alphaDimm;
-                    }
+                using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+                {
+                    const float movement = 0.1f;
+                    const float alphaDimm = 0.97f;
+                    for (int generation = (int)spectrumBarGenerations - 1; generation > 0; generation--)
+                        for (int bar = 0; bar < spectrumBarCount; bar++)
+                        {
+                            SSpectrumBar spectrumBar = spectrumBars[generation - 1, bar];
+                            spectrumBar.LowerLeft.Z -= movement;
+                            spectrumBar.LowerRight.Z -= movement;
+                            spectrumBar.UpperLeft.Z -= movement;
+                            spectrumBar.UpperRight.Z -= movement;
+                            spectrumBar.Color.W *= alphaDimm;
+                            spectrumBars[generation, bar] = spectrumBar;
+                        }
+                }
             }
 
             void AddCurrentSpectrum()
@@ -209,10 +213,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 const int cTenPowSeven = 10000000;
                 using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
                 {
-                    SIndexDistance[] distList = new SIndexDistance[spectrumBarGenerations * spectrumBarCount];
-                    int distListIndex = 0;
                     for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                     {
+                        SIndexDistance[] distList = new SIndexDistance[spectrumBarGenerations * spectrumBarCount];
+                        int distListIndex = 0;
+
                         float[] spectrumBarVertexes = spectrumBarShaders[shaderNo].SpectrumBarVertexes;
                         uint[] spectrumBarVertexIndexes = spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes;
                         int generationOffset = 0;
@@ -272,12 +277,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             SIndexDistance[] temp = new SIndexDistance[totalElements];
 
                             while ((left <= mid) && (rightStart <= right))
-                            {
                                 if (distances[left].IntegerDistance <= distances[rightStart].IntegerDistance)
                                     temp[index++] = distances[left++];
                                 else
                                     temp[index++] = distances[rightStart++];
-                            }
+
                             if (left > mid)
                                 for (int j = rightStart; j <= right; j++)
                                     temp[index++] = distances[rightStart++];
