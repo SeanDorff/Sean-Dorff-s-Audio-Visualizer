@@ -34,7 +34,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private SpectrumBarShader[] spectrumBarShaders;
 
         private double time;
-        private Vector2 lastMousePos;
+        private float bassLoudness;
 
         public SDAV_Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -57,8 +57,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 BuildShaders();
 
                 base.OnLoad();
-
-                lastMousePos = new Vector2(MouseState.X, MouseState.Y);
             }
         }
 
@@ -353,6 +351,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 UpdateSpectrumBars();
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+                bassLoudness = Math.Max(bassLoudness * 0.95f, GetCurrentLoudness());
+
                 for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                 {
                     spectrumBarShaders[shaderNo].SendSpectrumBarData();
@@ -361,7 +361,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     spectrumBarShaders[shaderNo].BindVertexArray();
 
                     spectrumBarShaders[shaderNo].SetModelViewProjection(camera);
-                    spectrumBarShaders[shaderNo].SetFloat("loudness", GetCurrentLoudness());
+                    spectrumBarShaders[shaderNo].SetFloat("loudness", bassLoudness);
 
                     spectrumBarShaders[shaderNo].DrawElements();
                 }
