@@ -7,8 +7,6 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -128,19 +126,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
                 {
                     Task[] taskArray = new Task[spectrumBarGenerations];
-                    {
-                        List<Tuple<int, int>> startParameters = new();
+                    SStartParameter[] startParameters = new SStartParameter[spectrumBarGenerations];
 
-                        for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
-                            for (int generation = 0; generation < generationsPerShader; generation++)
-                                startParameters.Add(new Tuple<int, int>(shaderNo, generation));
+                    for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
+                        for (int generation = 0; generation < generationsPerShader; generation++)
+                            startParameters[shaderNo * generationsPerShader + generation] = new SStartParameter { ShaderNo = shaderNo, Generation = generation };
 
-                        foreach (Tuple<int, int> startParameter in startParameters)
-                            taskArray[(startParameter.Item1 * generationsPerShader) + startParameter.Item2] = Task.Factory.StartNew(() =>
-                            TransformSpectrumToVertices(startParameter.Item1, startParameter.Item2));
-
-                        startParameters.Clear();
-                    }
+                    foreach (SStartParameter startParameter in startParameters)
+                        taskArray[(startParameter.ShaderNo * generationsPerShader) + startParameter.Generation] = Task.Factory.StartNew(() =>
+                        TransformSpectrumToVertices(startParameter.ShaderNo, startParameter.Generation));
 
                     Task.WaitAll(taskArray);
                 }
@@ -149,24 +143,24 @@ namespace Sean_Dorff_s_Audio_Visualizer
             void TransformSpectrumToVertices(int shaderNo, int generation)
             {
                 const int stride = 4 * 3 + 4 * 4;
+                SpectrumBar spectrumBar = new();
+                int generationOffset = 0;
+                int barByStride = 0;
+                int offsetPlusBarByStride = 0;
+                float ColorX = 0;
+                float ColorY = 0;
+                float ColorZ = 0;
+                float ColorW = 0;
                 for (int bar = 0; bar < spectrumBarCount; bar++)
                 {
-                    SpectrumBar spectrumBar = new();
-                    try
-                    {
-                        spectrumBar = spectrumBars[shaderNo * generationsPerShader + generation, bar];
-                    }
-                    catch (IndexOutOfRangeException e)
-                    {
-                        Debug.WriteLine(e);
-                    }
-                    int generationOffset = generation * (int)spectrumBarCount * stride;
-                    int barByStride = bar * stride;
-                    int offsetPlusBarByStride = generationOffset + barByStride;
-                    float ColorX = spectrumBar.Color.X;
-                    float ColorY = spectrumBar.Color.Y;
-                    float ColorZ = spectrumBar.Color.Z;
-                    float ColorW = spectrumBar.Color.W;
+                    spectrumBar = spectrumBars[shaderNo * generationsPerShader + generation, bar];
+                    generationOffset = generation * (int)spectrumBarCount * stride;
+                    barByStride = bar * stride;
+                    offsetPlusBarByStride = generationOffset + barByStride;
+                    ColorX = spectrumBar.Color.X;
+                    ColorY = spectrumBar.Color.Y;
+                    ColorZ = spectrumBar.Color.Z;
+                    ColorW = spectrumBar.Color.W;
                     spectrumBarShaders[shaderNo].SpectrumBarVertexes[offsetPlusBarByStride] = spectrumBar.LowerLeft.X;
                     spectrumBarShaders[shaderNo].SpectrumBarVertexes[offsetPlusBarByStride + 1] = spectrumBar.LowerLeft.Y;
                     spectrumBarShaders[shaderNo].SpectrumBarVertexes[offsetPlusBarByStride + 2] = spectrumBar.LowerLeft.Z;
@@ -219,18 +213,24 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     int distListIndex = 0;
                     for (int shaderNo = 0; shaderNo < (spectrumBarGenerations / generationsPerShader); shaderNo++)
                     {
+                        float[] spectrumBarVertexes = spectrumBarShaders[shaderNo].SpectrumBarVertexes;
+                        uint[] spectrumBarVertexIndexes = spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes;
+                        int generationOffset = 0;
+                        uint index = 0;
+
                         for (int generation = 0; generation < generationsPerShader; generation++)
                             for (int bar = 0; bar < spectrumBarCount; bar++)
                             {
-                                int generationOffset = generation * (int)spectrumBarCount * 6;
-                                uint index = spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes[generationOffset + bar * 6];
+                                generationOffset = generation * (int)spectrumBarCount * 6;
+                                index = spectrumBarVertexIndexes[generationOffset + bar * 6];
                                 distList[distListIndex++] = new SIndexDistance
                                 {
                                     Index = index,
-                                    IntegerDistance = (int)((camera.Position.Z - spectrumBarShaders[shaderNo].SpectrumBarVertexes[index + 3]) * cTenPowSeven)
+                                    IntegerDistance = (int)((camera.Position.Z - spectrumBarVertexes[index + 3]) * cTenPowSeven)
                                 };
                             }
-                        uint[] newIndexes = new uint[spectrumBarShaders[shaderNo].SpectrumBarVertexIndexes.Length];
+
+                        uint[] newIndexes = new uint[spectrumBarVertexIndexes.Length];
                         uint newIndex = 0;
                         MergeSort(ref distList);
                         for (int i = 0; i < distList.Length; i++)
@@ -534,6 +534,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             public uint Index;
             public int IntegerDistance;
+        }
+
+        private struct SStartParameter
+        {
+            public int ShaderNo;
+            public int Generation;
         }
     }
 }
