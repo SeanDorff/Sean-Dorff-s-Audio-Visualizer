@@ -102,7 +102,7 @@ namespace Common
             }
         }
 
-        public struct SVertexesAndIndexes
+        private struct SVertexesAndIndexes
         {
             public float[] Vertexes;
             public uint[] Indexes;

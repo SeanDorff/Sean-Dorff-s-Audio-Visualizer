@@ -7,7 +7,6 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -32,17 +31,14 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly uint spectrumBarGenerations = 150;
         private SSpectrumBar[,] spectrumBars;
 
-        //private GenericShader spectrumBarShader;
-
         private readonly uint starCount = 15000;
         private SStar[] stars;
 
-        //private GenericShader starShader;
         private GenericShader genericShader;
-        private int spectrumBarVertexesCount;
-        private int starVertexesCount;
-        private int spectrumBarIndexesCount;
-        private int starIndexesCount;
+        private readonly int spectrumBarVertexesCount;
+        private readonly int starVertexesCount;
+        private readonly int spectrumBarIndexesCount;
+        private readonly int starIndexesCount;
 
         private double time;
         private readonly Random random = new();
@@ -189,38 +185,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     ColorY = spectrumBar.Color.Y;
                     ColorZ = spectrumBar.Color.Z;
                     ColorW = spectrumBar.Color.W;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride] = spectrumBar.LowerLeft.X;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 1] = spectrumBar.LowerLeft.Y;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 2] = spectrumBar.LowerLeft.Z;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 3] = spectrumBar.LowerLeft.W;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 4] = ColorX;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 5] = ColorY;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 6] = ColorZ;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 7] = ColorW;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 8] = spectrumBar.LowerRight.X;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 9] = spectrumBar.LowerRight.Y;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 10] = spectrumBar.LowerRight.Z;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 11] = spectrumBar.LowerRight.W;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 12] = ColorX;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 13] = ColorY;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 14] = ColorZ;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 15] = ColorW;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 16] = spectrumBar.UpperLeft.X;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 17] = spectrumBar.UpperLeft.Y;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 18] = spectrumBar.UpperLeft.Z;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 19] = spectrumBar.UpperLeft.W;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 20] = ColorX;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 21] = ColorY;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 22] = ColorZ;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 23] = ColorW;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 24] = spectrumBar.UpperRight.X;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 25] = spectrumBar.UpperRight.Y;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 26] = spectrumBar.UpperRight.Z;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 27] = spectrumBar.UpperRight.W;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 28] = ColorX;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 29] = ColorY;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 30] = ColorZ;
-                    //spectrumBarShader.Vertexes[offsetPlusBarByStride + 31] = ColorW; 
                     genericShader.Vertexes[offsetPlusBarByStride] = spectrumBar.LowerLeft.X;
                     genericShader.Vertexes[offsetPlusBarByStride + 1] = spectrumBar.LowerLeft.Y;
                     genericShader.Vertexes[offsetPlusBarByStride + 2] = spectrumBar.LowerLeft.Z;
@@ -255,28 +219,13 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     genericShader.Vertexes[offsetPlusBarByStride + 31] = ColorW;
                     generationOffset = generation * (int)spectrumBarCount * 6;
                     int offsetPlusBarBy6 = generationOffset + bar * 6;
-                    // original calculation: (uint)bar * 4 + spectrumBarCount * 4 * (uint)generation
-                    // simplified calculation: 4 * ((uint)bar + spectrumBarCount * (uint)generation)
                     uint barPlusBarCount = 4 * ((uint)bar + spectrumBarCount * (uint)generation);
-                    //spectrumBarShader.Indexes[offsetPlusBarBy6] = barPlusBarCount;
-                    //spectrumBarShader.Indexes[offsetPlusBarBy6 + 1] = barPlusBarCount + 1;
-                    //spectrumBarShader.Indexes[offsetPlusBarBy6 + 2] = barPlusBarCount + 2;
-                    //spectrumBarShader.Indexes[offsetPlusBarBy6 + 3] = barPlusBarCount + 1;
-                    //spectrumBarShader.Indexes[offsetPlusBarBy6 + 4] = barPlusBarCount + 2;
-                    //spectrumBarShader.Indexes[offsetPlusBarBy6 + 5] = barPlusBarCount + 3;
-                    try
-                    {
-                        genericShader.Indexes[offsetPlusBarBy6] = barPlusBarCount;
-                        genericShader.Indexes[offsetPlusBarBy6 + 1] = barPlusBarCount + 1;
-                        genericShader.Indexes[offsetPlusBarBy6 + 2] = barPlusBarCount + 2;
-                        genericShader.Indexes[offsetPlusBarBy6 + 3] = barPlusBarCount + 1;
-                        genericShader.Indexes[offsetPlusBarBy6 + 4] = barPlusBarCount + 2;
-                        genericShader.Indexes[offsetPlusBarBy6 + 5] = barPlusBarCount + 3;
-                    }
-                    catch (IndexOutOfRangeException e)
-                    {
-                        Debug.WriteLine(e);
-                    }
+                    genericShader.Indexes[offsetPlusBarBy6] = barPlusBarCount;
+                    genericShader.Indexes[offsetPlusBarBy6 + 1] = barPlusBarCount + 1;
+                    genericShader.Indexes[offsetPlusBarBy6 + 2] = barPlusBarCount + 2;
+                    genericShader.Indexes[offsetPlusBarBy6 + 3] = barPlusBarCount + 1;
+                    genericShader.Indexes[offsetPlusBarBy6 + 4] = barPlusBarCount + 2;
+                    genericShader.Indexes[offsetPlusBarBy6 + 5] = barPlusBarCount + 3;
                 }
             }
 
@@ -287,9 +236,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 {
                     SIndexDistance[] distList = new SIndexDistance[spectrumBarGenerations * spectrumBarCount];
                     int distListIndex = 0;
-
-                    //float[] spectrumBarVertexes = spectrumBarShader.Vertexes;
-                    //uint[] spectrumBarVertexIndexes = spectrumBarShader.Indexes;
                     float[] spectrumBarVertexes = genericShader.Vertexes;
                     uint[] spectrumBarVertexIndexes = genericShader.Indexes;
                     int generationOffset = 0;
@@ -319,9 +265,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         newIndexes[newIndex++] = distList[i].Index + 2;
                         newIndexes[newIndex++] = distList[i].Index + 3;
                     }
-                    //spectrumBarShader.Indexes = newIndexes;
                     Array.Copy(newIndexes, 0, genericShader.Indexes, 0, newIndexes.Length);
-                    //genericShader.Indexes = newIndexes;
                 }
 
                 void ParallelMergeSort(ref SIndexDistance[] distances, int depth)
@@ -419,11 +363,13 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
+                const float alphaDimm = 0.97f;
                 int remainingGenerator = (int)(starCount / spectrumBarGenerations);
                 for (int i = 0; i < starCount; i++)
                 {
                     SStar star = stars[i];
                     star.Generation += 1;
+                    star.Color.W *= alphaDimm;
                     if ((star.Generation <= 0) || (star.Generation > 150))
                     {
                         if (remainingGenerator-- > 0)
@@ -463,8 +409,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     starVertexIndexes[i] = (uint)i;
                 }
 
-                //starShader.Vertexes = starVertexes;
-                //starShader.Indexes = starVertexIndexes;
                 Array.Copy(starVertexes, 0, genericShader.Vertexes, 0, starVertexes.Length);
                 Array.Copy(starVertexIndexes, 0, genericShader.Indexes, 0, starVertexIndexes.Length);
             }
@@ -478,20 +422,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 if (time > MathHelper.TwoPi)
                     time -= MathHelper.TwoPi;
 
-                //spectrumBarShader.CurrentBuffer++;
-                //starShader.CurrentBuffer++;
-
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
                 genericShader.VertexesCount = spectrumBarVertexesCount;
                 genericShader.IndexesCount = spectrumBarIndexesCount;
                 UpdateSpectrumBars();
-
-                //starShader.Use();
-                //starShader.SendData();
-                //starShader.SetModelViewProjection(camera);
-                //starShader.SetVertexAttribPointerAndArrays();
-                //starShader.SetFloat("drift", 0.1f);
-                //starShader.DrawPointElements();
                 genericShader.Use();
                 genericShader.SendData();
                 genericShader.SetModelViewProjection(camera);
@@ -502,12 +437,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.VertexesCount = starVertexesCount;
                 genericShader.IndexesCount = starIndexesCount;
                 UpdateStars();
-                //spectrumBarShader.Use();
-                //spectrumBarShader.SendData();
-                //spectrumBarShader.SetModelViewProjection(camera);
-                //spectrumBarShader.SetVertexAttribPointerAndArrays();
-                //spectrumBarShader.SetFloat("drift", 0.1f);
-                //spectrumBarShader.DrawPointElements();  
                 genericShader.Use();
                 genericShader.SendData();
                 genericShader.SetModelViewProjection(camera);
@@ -518,8 +447,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 SwapBuffers();
 
                 base.OnRenderFrame(e);
-                //starShader.CurrentBuffer++;
-                //spectrumBarShader.CurrentBuffer++;
             }
         }
 
@@ -592,8 +519,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         protected override void OnUnload()
         {
             wasAPIAudio.StopListen();
-            //spectrumBarShader.Unload();
-            //starShader.Unload();
             genericShader.Unload();
             base.OnUnload();
         }
@@ -652,8 +577,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
-                //spectrumBarShader = new(spectrumBarCount * spectrumBarGenerations * 32, spectrumBarCount * spectrumBarGenerations * 6);
-                //starShader = new(starCount * 8, starCount);
                 genericShader = new((uint)Math.Max(spectrumBarVertexesCount, starVertexesCount), (uint)Math.Max(spectrumBarIndexesCount, starIndexesCount));
             }
         }
