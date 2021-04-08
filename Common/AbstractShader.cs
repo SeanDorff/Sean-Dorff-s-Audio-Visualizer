@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 using System.Reflection;
 
@@ -11,6 +12,8 @@ namespace Common
         private readonly int[] vertexBufferHandle = new int[bufferCount];
         private readonly int[] vertexArrayHandle = new int[bufferCount];
         private readonly SVertexesAndIndexes[] vertexesAndIndexes = new SVertexesAndIndexes[bufferCount];
+        private readonly int[] vertexesCount = new int[bufferCount];
+        private readonly int[] indexesCount = new int[bufferCount];
         private Shader shader;
         private int currentBuffer = 0;
 
@@ -20,12 +23,15 @@ namespace Common
         public int CurrentBuffer { get => currentBuffer; set => currentBuffer = (value == bufferCount ? 0 : value); }
         public float[] Vertexes { get => vertexesAndIndexes[currentBuffer].Vertexes; set => vertexesAndIndexes[currentBuffer].Vertexes = value; }
         public uint[] Indexes { get => vertexesAndIndexes[currentBuffer].Indexes; set => vertexesAndIndexes[currentBuffer].Indexes = value; }
+        public int VertexesCount { get => vertexesCount[currentBuffer]; set => vertexesCount[currentBuffer] = value; }
+        public int IndexesCount { get => indexesCount[currentBuffer]; set => indexesCount[currentBuffer] = value; }
         public Shader Shader { get => shader; set => shader = value; }
 
-        public AbstractShader(uint vertexArrayLength, uint indexArrayLength)
+        public AbstractShader(string vertexShaderFile, string fragmentShaderFile, uint vertexArrayLength, uint indexArrayLength)
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
+                Shader = new Shader(vertexShaderFile, fragmentShaderFile);
                 do
                 {
                     VertexArrayHandle = GL.GenVertexArray();
@@ -61,6 +67,38 @@ namespace Common
                 while (currentBuffer != bufferCount);
 
                 GL.DeleteProgram(Shader.Handle);
+            }
+        }
+
+        public void Use() => Shader.Use();
+
+        public void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
+
+        public void SetFloat(string name, float value) => Shader.SetFloat(name, value);
+
+        public void SetModelViewProjection(Camera camera)
+        {
+            Shader.SetMatrix4("model", Matrix4.Identity);
+            Shader.SetMatrix4("view", camera.GetViewMatrix());
+            Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+        }
+
+        public void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
+        {
+            int location = Shader.GetAttribLocation(attribute);
+            GL.EnableVertexAttribArray(location);
+            GL.VertexAttribPointer(location, size, VertexAttribPointerType.Float, false, stride, offset);
+        }
+
+        public void SendData()
+        {
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferHandle);
+                GL.BufferData(BufferTarget.ArrayBuffer, VertexesCount * sizeof(float), Vertexes, BufferUsageHint.DynamicDraw);
+
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferHandle);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, IndexesCount * sizeof(uint), Indexes, BufferUsageHint.DynamicDraw);
             }
         }
 

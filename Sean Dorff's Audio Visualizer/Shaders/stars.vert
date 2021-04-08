@@ -11,6 +11,6 @@ uniform float drift;
 
 void main(void)
 {
-    gl_Position = vec4(starPosition.xy, starPosition.z + drift * starPosition.w, 1.0f) * model * view * projection;
+    gl_Position = vec4(starPosition.xy, starPosition.z - drift * starPosition.w, 1.0f) * model * view * projection;
     starVertexColor = starColor;
 }
