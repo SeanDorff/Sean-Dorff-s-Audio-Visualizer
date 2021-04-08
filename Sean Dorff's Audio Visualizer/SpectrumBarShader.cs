@@ -9,29 +9,17 @@ namespace Sean_Dorff_s_Audio_Visualizer
 {
     internal class SpectrumBarShader : AbstractShader
     {
-        public float[] SpectrumBarVertexes;
-        public uint[] SpectrumBarVertexIndexes;
-
-        public SpectrumBarShader(uint spectrumBarCount, uint generationsPerShader)
+        public SpectrumBarShader(uint spectrumBarCount, uint generationsPerShader) : base(spectrumBarCount * ((4 * 4) + (4 * 4)) * generationsPerShader, 2 * 3 * spectrumBarCount * generationsPerShader)
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
-                SpectrumBarVertexes = new float[spectrumBarCount * ((4 * 3) + (4 * 4)) * generationsPerShader];
-                SpectrumBarVertexIndexes = new uint[2 * 3 * spectrumBarCount * generationsPerShader];
-
-                VertexArrayHandle = GL.GenVertexArray();
                 GL.BindVertexArray(VertexArrayHandle);
-
-                VertexBufferHandle = GL.GenBuffer();
-                ElementBufferHandle = GL.GenBuffer();
 
                 SendSpectrumBarData();
 
                 Shader = new Shader("Shaders/spectrumBar.vert", "Shaders/spectrumBar.frag");
-                Shader.Use();
 
-                SetVertexAttribPointerAndArray("aPosition", 3, 7 * sizeof(float), 0);
-                SetVertexAttribPointerAndArray("aColor", 4, 7 * sizeof(float), 3 * sizeof(float));
+                SetVertexAttribPointerAndArrays();
             }
         }
 
@@ -46,23 +34,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         public void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
 
-        public void DrawElements() => GL.DrawElements(PrimitiveType.Triangles, SpectrumBarVertexIndexes.Length, DrawElementsType.UnsignedInt, 0);
+        public void DrawElements() => GL.DrawElements(PrimitiveType.Triangles, Indexes.Length, DrawElementsType.UnsignedInt, 0);
 
         public void SetFloat(string name, float value) => Shader.SetFloat(name, value);
 
-        public void Unload()
+        public void SetVertexAttribPointerAndArrays()
         {
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexArrayHandle);
-                GL.BindVertexArray(VertexArrayHandle);
-                GL.UseProgram(Shader.Handle);
-
-                GL.DeleteBuffer(VertexBufferHandle);
-                GL.DeleteVertexArray(VertexArrayHandle);
-
-                GL.DeleteProgram(Shader.Handle);
-            }
+            GL.BindVertexArray(VertexArrayHandle);
+            SetVertexAttribPointerAndArray("spectrumPosition", 4, 8 * sizeof(float), 0);
+            SetVertexAttribPointerAndArray("spectrumColor", 4, 8 * sizeof(float), 4 * sizeof(float));
         }
 
         private void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
@@ -77,10 +57,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferHandle);
-                GL.BufferData(BufferTarget.ArrayBuffer, SpectrumBarVertexes.Length * sizeof(float), SpectrumBarVertexes, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, Vertexes.Length * sizeof(float), Vertexes, BufferUsageHint.StreamCopy);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferHandle);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, SpectrumBarVertexIndexes.Length * sizeof(uint), SpectrumBarVertexIndexes, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, Indexes.Length * sizeof(uint), Indexes, BufferUsageHint.StreamCopy);
             }
         }
     }

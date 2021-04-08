@@ -9,29 +9,17 @@ namespace Sean_Dorff_s_Audio_Visualizer
 {
     internal class StarShader : AbstractShader
     {
-        public float[] starVertexes;
-        public uint[] starVertexIndexes;
-
-        public StarShader(uint starCount)
+        public StarShader(uint starCount) : base(starCount * 8, starCount)
         {
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
-                starVertexes = new float[starCount * 8]; // xyz, generation, RGBA
-                starVertexIndexes = new uint[starCount];
-
-                VertexArrayHandle = GL.GenVertexArray();
                 GL.BindVertexArray(VertexArrayHandle);
-
-                VertexBufferHandle = GL.GenBuffer();
-                ElementBufferHandle = GL.GenBuffer();
 
                 SendStarData();
 
                 Shader = new Shader("Shaders/stars.vert", "Shaders/stars.frag");
-                Shader.Use();
 
-                SetVertexAttribPointerAndArray("aPosition", 4, 8 * sizeof(float), 0);
-                SetVertexAttribPointerAndArray("aColor", 4, 8 * sizeof(float), 4 * sizeof(float));
+                SetVertexAttribPointerAndArrays();
             }
         }
 
@@ -46,23 +34,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         public void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
 
-        public void DrawElements() => GL.DrawElements(PrimitiveType.Points, starVertexIndexes.Length, DrawElementsType.UnsignedInt, 0);
+        public void DrawElements() => GL.DrawElements(PrimitiveType.Points, Indexes.Length, DrawElementsType.UnsignedInt, 0);
 
         public void SetFloat(string name, float value) => Shader.SetFloat(name, value);
 
-        public void Unload()
+        public void SetVertexAttribPointerAndArrays()
         {
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexArrayHandle);
-                GL.BindVertexArray(VertexArrayHandle);
-                GL.UseProgram(Shader.Handle);
-
-                GL.DeleteBuffer(VertexBufferHandle);
-                GL.DeleteVertexArray(VertexArrayHandle);
-
-                GL.DeleteProgram(Shader.Handle);
-            }
+            GL.BindVertexArray(VertexArrayHandle);
+            SetVertexAttribPointerAndArray("starPosition", 4, 8 * sizeof(float), 0);
+            SetVertexAttribPointerAndArray("starColor", 4, 8 * sizeof(float), 4 * sizeof(float));
         }
 
         private void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
@@ -77,10 +57,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferHandle);
-                GL.BufferData(BufferTarget.ArrayBuffer, starVertexes.Length * sizeof(float), starVertexes, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, Vertexes.Length * sizeof(float), Vertexes, BufferUsageHint.StreamCopy);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferHandle);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, starVertexIndexes.Length * sizeof(uint), starVertexIndexes, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, Indexes.Length * sizeof(uint), Indexes, BufferUsageHint.StreamCopy);
             }
         }
     }

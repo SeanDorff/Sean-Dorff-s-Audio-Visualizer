@@ -1,8 +1,8 @@
 ﻿#version 450 core
 
-layout (location = 0) in vec4 aPosition;
-layout (location = 1) in vec4 aColor;
-out vec4 vertexColor;
+layout (location = 0) in vec4 starPosition;
+layout (location = 1) in vec4 starColor;
+out vec4 starVertexColor;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -11,6 +11,6 @@ uniform float drift;
 
 void main(void)
 {
-    gl_Position = vec4(aPosition.xy, drift * aPosition.z * aPosition.w, 1.0f) * model * view * projection;
-    vertexColor = aColor;
+    gl_Position = vec4(starPosition.xy, starPosition.z + drift * starPosition.w, 1.0f) * model * view * projection;
+    starVertexColor = starColor;
 }

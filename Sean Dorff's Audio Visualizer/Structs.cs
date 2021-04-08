@@ -4,10 +4,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
 {
     internal struct SSpectrumBar
     {
-        public Vector3 LowerLeft;
-        public Vector3 LowerRight;
-        public Vector3 UpperLeft;
-        public Vector3 UpperRight;
+        public Vector4 LowerLeft;
+        public Vector4 LowerRight;
+        public Vector4 UpperLeft;
+        public Vector4 UpperRight;
         public Vector4 Color;
     }
 
