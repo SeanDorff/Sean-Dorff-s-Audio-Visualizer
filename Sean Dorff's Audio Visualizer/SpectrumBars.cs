@@ -87,42 +87,43 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 Array.Copy(indexes, 0, genericShader.Indexes, 0, indexes.Length);
             }
 
-            void MoveBarGenerations()
-            {
+        }
+
+        private void MoveBarGenerations()
+        {
 #if (DEBUG)
-                using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
-                {
-                    SSpectrumBar spectrumBar;
-                    for (int generation = spectrumBarGenerations - 1; generation > 0; generation--)
-                        for (int bar = 0; bar < spectrumBarCount; bar++)
-                        {
-                            spectrumBar = spectrumBars[generation - 1, bar];
-                            spectrumBar.LowerLeft.W += 1;
-                            spectrumBar.LowerRight.W += 1;
-                            spectrumBar.UpperLeft.W += 1;
-                            spectrumBar.UpperRight.W += 1;
-                            spectrumBar.Color.W *= alphaDimm;
-                            spectrumBars[generation, bar] = spectrumBar;
-                        }
-                }
-            }
-
-            void AddCurrentSpectrum()
             {
-                float loudness = GetCurrentLoudness();
-                for (int bar = 0; bar < spectrumBarCount; bar++)
-                    spectrumBars[0, bar] = new SSpectrumBar()
+                SSpectrumBar spectrumBar;
+                for (int generation = spectrumBarGenerations - 1; generation > 0; generation--)
+                    for (int bar = 0; bar < spectrumBarCount; bar++)
                     {
-                        LowerLeft = new Vector4(barBorders[bar].X, 0, 0, 0),
-                        LowerRight = new Vector4(barBorders[bar].Y, 0, 0, 0),
-                        UpperLeft = new Vector4(barBorders[bar].X, DeNullifiedSpectrumData(bar), 0, 0),
-                        UpperRight = new Vector4(barBorders[bar].Y, DeNullifiedSpectrumData(bar), 0, 0),
-                        Color = new Vector4(loudness, 1 - barOfBarCount(bar), barOfBarCount(bar), 0.75f)
-                    };
-
-                float barOfBarCount(int bar) => bar / (float)spectrumBarCount;
+                        spectrumBar = spectrumBars[generation - 1, bar];
+                        spectrumBar.LowerLeft.W += 1;
+                        spectrumBar.LowerRight.W += 1;
+                        spectrumBar.UpperLeft.W += 1;
+                        spectrumBar.UpperRight.W += 1;
+                        spectrumBar.Color.W *= alphaDimm;
+                        spectrumBars[generation, bar] = spectrumBar;
+                    }
             }
+        }
+
+        private void AddCurrentSpectrum()
+        {
+            float loudness = GetCurrentLoudness();
+            for (int bar = 0; bar < spectrumBarCount; bar++)
+                spectrumBars[0, bar] = new SSpectrumBar()
+                {
+                    LowerLeft = new Vector4(barBorders[bar].X, 0, 0, 0),
+                    LowerRight = new Vector4(barBorders[bar].Y, 0, 0, 0),
+                    UpperLeft = new Vector4(barBorders[bar].X, DeNullifiedSpectrumData(bar), 0, 0),
+                    UpperRight = new Vector4(barBorders[bar].Y, DeNullifiedSpectrumData(bar), 0, 0),
+                    Color = new Vector4(loudness, 1 - barOfBarCount(bar), barOfBarCount(bar), 0.75f)
+                };
+
+            float barOfBarCount(int bar) => bar / (float)spectrumBarCount;
         }
 
         private void TransformToVertexes()

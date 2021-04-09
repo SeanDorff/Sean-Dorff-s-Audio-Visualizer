@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sean Dorff's Audio Visualizer", "Sean Dorff's Audio Visualizer\Sean Dorff's Audio Visualizer.csproj", "{E98AD920-9DA8-4A14-9399-F331C96A1CEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{3E2881C4-8E3E-449B-9FC0-3D76446E5E0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{3E2881C4-8E3E-449B-9FC0-3D76446E5E0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasAPI", "WasAPI\WasAPI.csproj", "{C4DAC2A7-CD98-4465-9F98-A21877114E2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WasAPI", "WasAPI\WasAPI.csproj", "{C4DAC2A7-CD98-4465-9F98-A21877114E2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
