@@ -21,9 +21,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         public void SetVertexAttribPointerAndArrays()
         {
+            const int size = 4;
+            const int stride = 8 * sizeof(float);
+            const int colorOffset = size * sizeof(float);
             BindVertexArray();
-            SetVertexAttribPointerAndArray("aPosition", 4, 8 * sizeof(float), 0);
-            SetVertexAttribPointerAndArray("aColor", 4, 8 * sizeof(float), 4 * sizeof(float));
+            SetVertexAttribPointerAndArray("aPosition", size, stride, 0);
+            SetVertexAttribPointerAndArray("aColor", size, stride, colorOffset);
         }
     }
 }

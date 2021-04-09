@@ -15,7 +15,7 @@ namespace Common
             this.displayStartFinished = displayStartFinished;
             if (this.displayStartFinished)
                 Debug.WriteLine("[" + this.name + "]: Started");
-            base.Start();
+            Start();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -24,9 +24,9 @@ namespace Common
             {
                 if (disposing)
                     if (displayStartFinished)
-                        Debug.WriteLine("[{0}]: Finished -> {1}", name, base.Elapsed);
+                        Debug.WriteLine("[{0}]: Finished -> {1}", name, Elapsed);
                     else
-                        Debug.WriteLine("[{0}]: {1}", name, base.Elapsed);
+                        Debug.WriteLine("[{0}]: {1}", name, Elapsed);
 
                 disposedValue = true;
             }
@@ -34,7 +34,7 @@ namespace Common
 
         public void Dispose()
         {
-            base.Stop();
+            Stop();
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }

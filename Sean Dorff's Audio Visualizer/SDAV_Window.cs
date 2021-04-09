@@ -122,10 +122,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
             {
                 using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
                 {
+                    SSpectrumBar spectrumBar;
                     for (int generation = spectrumBarGenerations - 1; generation > 0; generation--)
                         for (int bar = 0; bar < spectrumBarCount; bar++)
                         {
-                            SSpectrumBar spectrumBar = spectrumBars[generation - 1, bar];
+                            spectrumBar = spectrumBars[generation - 1, bar];
                             spectrumBar.LowerLeft.W += 1;
                             spectrumBar.LowerRight.W += 1;
                             spectrumBar.UpperLeft.W += 1;
@@ -168,66 +169,66 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             void TransformSpectrumToVertices(int generation)
             {
-                const int stride = 4 * 4 + 4 * 4;
-                SSpectrumBar spectrumBar = new();
-                int generationOffset = 0;
-                int barByStride = 0;
-                int offsetPlusBarByStride = 0;
-                float ColorX = 0;
-                float ColorY = 0;
-                float ColorZ = 0;
-                float ColorW = 0;
+                const int stride = 4 * 4 + 4 * 4; // 4 * Vector4 vertex + 4 * Vector4 color
+                SSpectrumBar spectrumBar;
+                int generationOffsetForVertex = generation * spectrumBarCount * stride;
+                int generationOffsetForIndex = generation * spectrumBarCount * 6;
+                int barByStride;
+                int offsetPlusBarByStride;
+                float ColorX;
+                float ColorY;
+                float ColorZ;
+                float ColorW;
                 for (int bar = 0; bar < spectrumBarCount; bar++)
                 {
                     spectrumBar = spectrumBars[generation, bar];
-                    generationOffset = generation * spectrumBarCount * stride;
                     barByStride = bar * stride;
-                    offsetPlusBarByStride = generationOffset + barByStride;
+                    offsetPlusBarByStride = generationOffsetForVertex + barByStride;
                     ColorX = spectrumBar.Color.X;
                     ColorY = spectrumBar.Color.Y;
                     ColorZ = spectrumBar.Color.Z;
                     ColorW = spectrumBar.Color.W;
-                    genericShader.Vertexes[offsetPlusBarByStride] = spectrumBar.LowerLeft.X;
-                    genericShader.Vertexes[offsetPlusBarByStride + 1] = spectrumBar.LowerLeft.Y;
-                    genericShader.Vertexes[offsetPlusBarByStride + 2] = spectrumBar.LowerLeft.Z;
-                    genericShader.Vertexes[offsetPlusBarByStride + 3] = spectrumBar.LowerLeft.W;
-                    genericShader.Vertexes[offsetPlusBarByStride + 4] = ColorX;
-                    genericShader.Vertexes[offsetPlusBarByStride + 5] = ColorY;
-                    genericShader.Vertexes[offsetPlusBarByStride + 6] = ColorZ;
-                    genericShader.Vertexes[offsetPlusBarByStride + 7] = ColorW;
-                    genericShader.Vertexes[offsetPlusBarByStride + 8] = spectrumBar.LowerRight.X;
-                    genericShader.Vertexes[offsetPlusBarByStride + 9] = spectrumBar.LowerRight.Y;
-                    genericShader.Vertexes[offsetPlusBarByStride + 10] = spectrumBar.LowerRight.Z;
-                    genericShader.Vertexes[offsetPlusBarByStride + 11] = spectrumBar.LowerRight.W;
-                    genericShader.Vertexes[offsetPlusBarByStride + 12] = ColorX;
-                    genericShader.Vertexes[offsetPlusBarByStride + 13] = ColorY;
-                    genericShader.Vertexes[offsetPlusBarByStride + 14] = ColorZ;
-                    genericShader.Vertexes[offsetPlusBarByStride + 15] = ColorW;
-                    genericShader.Vertexes[offsetPlusBarByStride + 16] = spectrumBar.UpperLeft.X;
-                    genericShader.Vertexes[offsetPlusBarByStride + 17] = spectrumBar.UpperLeft.Y;
-                    genericShader.Vertexes[offsetPlusBarByStride + 18] = spectrumBar.UpperLeft.Z;
-                    genericShader.Vertexes[offsetPlusBarByStride + 19] = spectrumBar.UpperLeft.W;
-                    genericShader.Vertexes[offsetPlusBarByStride + 20] = ColorX;
-                    genericShader.Vertexes[offsetPlusBarByStride + 21] = ColorY;
-                    genericShader.Vertexes[offsetPlusBarByStride + 22] = ColorZ;
-                    genericShader.Vertexes[offsetPlusBarByStride + 23] = ColorW;
-                    genericShader.Vertexes[offsetPlusBarByStride + 24] = spectrumBar.UpperRight.X;
-                    genericShader.Vertexes[offsetPlusBarByStride + 25] = spectrumBar.UpperRight.Y;
-                    genericShader.Vertexes[offsetPlusBarByStride + 26] = spectrumBar.UpperRight.Z;
-                    genericShader.Vertexes[offsetPlusBarByStride + 27] = spectrumBar.UpperRight.W;
-                    genericShader.Vertexes[offsetPlusBarByStride + 28] = ColorX;
-                    genericShader.Vertexes[offsetPlusBarByStride + 29] = ColorY;
-                    genericShader.Vertexes[offsetPlusBarByStride + 30] = ColorZ;
-                    genericShader.Vertexes[offsetPlusBarByStride + 31] = ColorW;
-                    generationOffset = generation * spectrumBarCount * 6;
-                    int offsetPlusBarBy6 = generationOffset + bar * 6;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerLeft.X;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerLeft.Y;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerLeft.Z;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerLeft.W;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorX;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorY;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorZ;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorW;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerRight.X;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerRight.Y;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerRight.Z;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.LowerRight.W;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorX;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorY;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorZ;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorW;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperLeft.X;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperLeft.Y;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperLeft.Z;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperLeft.W;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorX;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorY;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorZ;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorW;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperRight.X;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperRight.Y;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperRight.Z;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = spectrumBar.UpperRight.W;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorX;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorY;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorZ;
+                    genericShader.Vertexes[offsetPlusBarByStride++] = ColorW;
+
+                    int offsetPlusBarBy6 = generationOffsetForIndex + bar * 6;
                     uint barPlusBarCount = (uint)(4 * (bar + spectrumBarCount * generation));
-                    genericShader.Indexes[offsetPlusBarBy6] = barPlusBarCount;
-                    genericShader.Indexes[offsetPlusBarBy6 + 1] = barPlusBarCount + 1;
-                    genericShader.Indexes[offsetPlusBarBy6 + 2] = barPlusBarCount + 2;
-                    genericShader.Indexes[offsetPlusBarBy6 + 3] = barPlusBarCount + 1;
-                    genericShader.Indexes[offsetPlusBarBy6 + 4] = barPlusBarCount + 2;
-                    genericShader.Indexes[offsetPlusBarBy6 + 5] = barPlusBarCount + 3;
+                    genericShader.Indexes[offsetPlusBarBy6++] = barPlusBarCount;
+                    genericShader.Indexes[offsetPlusBarBy6++] = barPlusBarCount + 1;
+                    genericShader.Indexes[offsetPlusBarBy6++] = barPlusBarCount + 2;
+                    genericShader.Indexes[offsetPlusBarBy6++] = barPlusBarCount + 1;
+                    genericShader.Indexes[offsetPlusBarBy6++] = barPlusBarCount + 2;
+                    genericShader.Indexes[offsetPlusBarBy6++] = barPlusBarCount + 3;
                 }
             }
 
@@ -240,13 +241,14 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     int distListIndex = 0;
                     float[] spectrumBarVertexes = genericShader.Vertexes;
                     uint[] spectrumBarVertexIndexes = genericShader.Indexes;
-                    int generationOffset = 0;
-                    uint index = 0;
+                    int generationOffset;
+                    uint index;
 
                     for (int generation = 0; generation < spectrumBarGenerations; generation++)
+                    {
+                        generationOffset = generation * spectrumBarCount * 6;
                         for (int bar = 0; bar < spectrumBarCount; bar++)
                         {
-                            generationOffset = generation * spectrumBarCount * 6;
                             index = spectrumBarVertexIndexes[generationOffset + bar * 6];
                             distList[distListIndex++] = new SIndexDistance
                             {
@@ -254,6 +256,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                                 IntegerDistance = (int)((camera.Position.Z - spectrumBarVertexes[index + 3]) * cTenPowSeven)
                             };
                         }
+                    }
 
                     uint[] newIndexes = new uint[spectrumBarVertexIndexes.Length];
                     uint newIndex = 0;
@@ -267,6 +270,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         newIndexes[newIndex++] = distList[i].Index + 2;
                         newIndexes[newIndex++] = distList[i].Index + 3;
                     }
+
                     Array.Copy(newIndexes, 0, genericShader.Indexes, 0, newIndexes.Length);
                 }
 
@@ -366,9 +370,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
             {
                 int remainingGenerator = starCount / spectrumBarGenerations;
+                SStar star;
                 for (int i = 0; i < starCount; i++)
                 {
-                    SStar star = stars[i];
+                    star = stars[i];
                     star.Generation += 1;
                     star.Color.W *= cAlphaDimm;
                     if ((star.Generation <= 0) || (star.Generation > 150))
@@ -460,42 +465,44 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 if (IsFocused)
                 {
                     KeyboardState keyInput = KeyboardState;
-
-                    if (keyInput.IsKeyDown(Keys.Escape))
-                        Close();
-
                     if (keyInput.IsKeyReleased(Keys.F))
                         ToggleFullscreen();
 
-                    const float cameraSpeed = 1.0f;
-                    const float mouseSensitivity = 0.2f;
+                    if (keyInput.IsAnyKeyDown)
+                    {
+                        if (keyInput.IsKeyDown(Keys.Escape))
+                            Close();
 
-                    if (keyInput.IsKeyDown(Keys.W))
-                    {
-                        camera.Position += camera.Front * cameraSpeed * (float)e.Time; // Forward
-                    }
+                        const float cameraSpeed = 1.0f;
 
-                    if (keyInput.IsKeyDown(Keys.S))
-                    {
-                        camera.Position -= camera.Front * cameraSpeed * (float)e.Time; // Backwards
-                    }
-                    if (keyInput.IsKeyDown(Keys.A))
-                    {
-                        camera.Position -= camera.Right * cameraSpeed * (float)e.Time; // Left
-                    }
-                    if (keyInput.IsKeyDown(Keys.D))
-                    {
-                        camera.Position += camera.Right * cameraSpeed * (float)e.Time; // Right
-                    }
-                    if (keyInput.IsKeyDown(Keys.Space))
-                    {
-                        camera.Position += camera.Up * cameraSpeed * (float)e.Time; // Up
-                    }
-                    if (keyInput.IsKeyDown(Keys.LeftShift))
-                    {
-                        camera.Position -= camera.Up * cameraSpeed * (float)e.Time; // Down
+                        if (keyInput.IsKeyDown(Keys.W))
+                        {
+                            camera.Position += camera.Front * cameraSpeed * (float)e.Time; // Forward
+                        }
+
+                        if (keyInput.IsKeyDown(Keys.S))
+                        {
+                            camera.Position -= camera.Front * cameraSpeed * (float)e.Time; // Backwards
+                        }
+                        if (keyInput.IsKeyDown(Keys.A))
+                        {
+                            camera.Position -= camera.Right * cameraSpeed * (float)e.Time; // Left
+                        }
+                        if (keyInput.IsKeyDown(Keys.D))
+                        {
+                            camera.Position += camera.Right * cameraSpeed * (float)e.Time; // Right
+                        }
+                        if (keyInput.IsKeyDown(Keys.Space))
+                        {
+                            camera.Position += camera.Up * cameraSpeed * (float)e.Time; // Up
+                        }
+                        if (keyInput.IsKeyDown(Keys.LeftShift))
+                        {
+                            camera.Position -= camera.Up * cameraSpeed * (float)e.Time; // Down
+                        }
                     }
                     // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
+                    const float mouseSensitivity = 0.2f;
                     camera.Yaw += (MouseState.X - MouseState.PreviousX) * mouseSensitivity;
                     camera.Pitch -= (MouseState.Y - MouseState.PreviousY) * mouseSensitivity; // reversed since y-coordinates range from bottom to top
                 }
