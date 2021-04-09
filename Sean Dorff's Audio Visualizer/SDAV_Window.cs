@@ -30,6 +30,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private readonly int starCount = 15000;
         private Stars stars;
+        private bool displayStars = true;
 
         private GenericShader genericShader;
 
@@ -86,13 +87,16 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SetFloat("drift", DRIFT);
                 genericShader.DrawTriangleElements();
 
-                stars.UpdateStars(ref genericShader);
-                genericShader.Use();
-                genericShader.SendData();
-                genericShader.SetModelViewProjection(camera);
-                genericShader.SetVertexAttribPointerAndArrays();
-                genericShader.SetFloat("drift", DRIFT);
-                genericShader.DrawPointElements();
+                if (displayStars)
+                {
+                    stars.UpdateStars(ref genericShader);
+                    genericShader.Use();
+                    genericShader.SendData();
+                    genericShader.SetModelViewProjection(camera);
+                    genericShader.SetVertexAttribPointerAndArrays();
+                    genericShader.SetFloat("drift", DRIFT);
+                    genericShader.DrawPointElements();
+                }
 
                 SwapBuffers();
 
@@ -109,8 +113,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 if (IsFocused)
                 {
                     KeyboardState keyInput = KeyboardState;
+
                     if (keyInput.IsKeyReleased(Keys.F))
                         ToggleFullscreen();
+                    if (keyInput.IsKeyReleased(Keys.R))
+                        displayStars = !displayStars;
 
                     if (keyInput.IsAnyKeyDown)
                     {
