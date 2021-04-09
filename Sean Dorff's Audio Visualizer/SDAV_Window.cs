@@ -40,7 +40,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly int spectrumBarIndexesCount;
 
         private double time;
-        private readonly Random random = new();
 
         private const float ALPHA_DIMM = 0.97f;
         private const float MOUSE_SENSITIVITY = 0.2f;
