@@ -4,10 +4,18 @@ using System.Diagnostics;
 namespace Common
 {
     /// <summary>
+    /// <para>
     /// This class extends <see cref="System.Diagnostics.Stopwatch"/> with the <see cref="System.IDisposable"/> interface.
+    /// </para>
+    /// <para>
+    /// Upon being instantiated it will start a <see cref="System.Diagnostics.Stopwatch"/>.
+    /// </para>
+    /// <para>
+    /// When the class is being disposed the <see cref="System.Diagnostics.Stopwatch"/> is being stopped and the elapsed time will be written to the debug output.
+    /// </para>
     /// </summary>
     /// <remarks>
-    /// The class turns off its main functionality using preprocessor statements.
+    /// The class turns off its main functionality using preprocessor statements. If your not running a debug build it will do almost nothing.
     /// </remarks>
     public class DisposableStopwatch : Stopwatch, IDisposable
     {
