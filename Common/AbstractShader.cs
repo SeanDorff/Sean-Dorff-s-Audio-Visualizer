@@ -17,9 +17,21 @@ namespace Common
         private Shader shader;
         private int currentBuffer = 0;
 
+        /// <summary>
+        /// The current <see cref="ElementBufferHandle"/>, selected by <see cref="CurrentBuffer"/>.
+        /// </summary>
         public int ElementBufferHandle { get => elementBufferHandle[currentBuffer]; set => elementBufferHandle[currentBuffer] = value; }
+        /// <summary>
+        /// The current <see cref="VertexBufferHandle"/>, selected by <see cref="CurrentBuffer"/>.
+        /// </summary>
         public int VertexBufferHandle { get => vertexBufferHandle[currentBuffer]; set => vertexBufferHandle[currentBuffer] = value; }
+        /// <summary>
+        /// The current <see cref="VertexArrayHandle"/>, select by <see cref="CurrentBuffer"/>.
+        /// </summary>
         public int VertexArrayHandle { get => vertexArrayHandle[currentBuffer]; set => vertexArrayHandle[currentBuffer] = value; }
+        /// <summary>
+        /// The current buffer number.
+        /// </summary>
         public int CurrentBuffer { get => currentBuffer; set => currentBuffer = (value == BUFFER_COUNT ? 0 : value); }
         public float[] Vertexes { get => vertexesAndIndexes[currentBuffer].Vertexes; set => vertexesAndIndexes[currentBuffer].Vertexes = value; }
         public uint[] Indexes { get => vertexesAndIndexes[currentBuffer].Indexes; set => vertexesAndIndexes[currentBuffer].Indexes = value; }
