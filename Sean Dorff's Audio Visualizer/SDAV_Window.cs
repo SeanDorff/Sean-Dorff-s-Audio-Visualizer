@@ -44,7 +44,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private double time;
         private readonly Random random = new();
 
-        private const float C_AlphaDimm = 0.97f;
+        private const float ALPHA_DIMM = 0.97f;
+        private const float MOUSE_SENSITIVITY = 0.2f;
+        private const float CAMERA_SPEED = 1.0f;
 
         public SDAV_Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -141,7 +143,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             spectrumBar.LowerRight.W += 1;
                             spectrumBar.UpperLeft.W += 1;
                             spectrumBar.UpperRight.W += 1;
-                            spectrumBar.Color.W *= C_AlphaDimm;
+                            spectrumBar.Color.W *= ALPHA_DIMM;
                             spectrumBars[generation, bar] = spectrumBar;
                         }
                 }
@@ -181,9 +183,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             void TransformSpectrumToVertices(int generation)
             {
-                const int C_Stride = 4 * 4 + 4 * 4; // 4 * Vector4 vertex + 4 * Vector4 color
+                const int STRIDE = 4 * 4 + 4 * 4; // 4 * Vector4 vertex + 4 * Vector4 color
                 SSpectrumBar spectrumBar;
-                int generationOffsetForVertex = generation * spectrumBarCount * C_Stride;
+                int generationOffsetForVertex = generation * spectrumBarCount * STRIDE;
                 int generationOffsetForIndex = generation * spectrumBarCount * 6;
                 int barByStride;
                 int offsetPlusBarByStride;
@@ -194,7 +196,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 for (int bar = 0; bar < spectrumBarCount; bar++)
                 {
                     spectrumBar = spectrumBars[generation, bar];
-                    barByStride = bar * C_Stride;
+                    barByStride = bar * STRIDE;
                     offsetPlusBarByStride = generationOffsetForVertex + barByStride;
                     ColorX = spectrumBar.Color.X;
                     ColorY = spectrumBar.Color.Y;
@@ -246,7 +248,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             void SortVerticesByCameraDistance()
             {
-                const int C_TenPowSeven = 10000000;
+                const int TEN_POW_SEVEN = 10000000;
 #if (DEBUG)
                 using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
@@ -267,7 +269,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             distList[distListIndex++] = new SIndexDistance
                             {
                                 Index = index,
-                                IntegerDistance = (int)((camera.Position.Z - spectrumBarVertexes[index + 3]) * C_TenPowSeven)
+                                IntegerDistance = (int)((camera.Position.Z - spectrumBarVertexes[index + 3]) * TEN_POW_SEVEN)
                             };
                         }
                     }
@@ -391,7 +393,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 {
                     star = stars[i];
                     star.Generation += 1;
-                    star.Color.W *= C_AlphaDimm;
+                    star.Color.W *= ALPHA_DIMM;
                     if ((star.Generation <= 0) || (star.Generation > 150))
                     {
                         if (remainingGenerator-- > 0)
@@ -493,38 +495,35 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         if (keyInput.IsKeyDown(Keys.Escape))
                             Close();
 
-                        const float C_CameraSpeed = 1.0f;
-
                         if (keyInput.IsKeyDown(Keys.W))
                         {
-                            camera.Position += camera.Front * C_CameraSpeed * (float)e.Time; // Forward
+                            camera.Position += camera.Front * CAMERA_SPEED * (float)e.Time; // Forward
                         }
 
                         if (keyInput.IsKeyDown(Keys.S))
                         {
-                            camera.Position -= camera.Front * C_CameraSpeed * (float)e.Time; // Backwards
+                            camera.Position -= camera.Front * CAMERA_SPEED * (float)e.Time; // Backwards
                         }
                         if (keyInput.IsKeyDown(Keys.A))
                         {
-                            camera.Position -= camera.Right * C_CameraSpeed * (float)e.Time; // Left
+                            camera.Position -= camera.Right * CAMERA_SPEED * (float)e.Time; // Left
                         }
                         if (keyInput.IsKeyDown(Keys.D))
                         {
-                            camera.Position += camera.Right * C_CameraSpeed * (float)e.Time; // Right
+                            camera.Position += camera.Right * CAMERA_SPEED * (float)e.Time; // Right
                         }
                         if (keyInput.IsKeyDown(Keys.Space))
                         {
-                            camera.Position += camera.Up * C_CameraSpeed * (float)e.Time; // Up
+                            camera.Position += camera.Up * CAMERA_SPEED * (float)e.Time; // Up
                         }
                         if (keyInput.IsKeyDown(Keys.LeftShift))
                         {
-                            camera.Position -= camera.Up * C_CameraSpeed * (float)e.Time; // Down
+                            camera.Position -= camera.Up * CAMERA_SPEED * (float)e.Time; // Down
                         }
                     }
                     // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
-                    const float mouseSensitivity = 0.2f;
-                    camera.Yaw += (MouseState.X - MouseState.PreviousX) * mouseSensitivity;
-                    camera.Pitch -= (MouseState.Y - MouseState.PreviousY) * mouseSensitivity; // reversed since y-coordinates range from bottom to top
+                    camera.Yaw += (MouseState.X - MouseState.PreviousX) * MOUSE_SENSITIVITY;
+                    camera.Pitch -= (MouseState.Y - MouseState.PreviousY) * MOUSE_SENSITIVITY; // reversed since y-coordinates range from bottom to top
                 }
                 base.OnUpdateFrame(e);
             }
@@ -634,12 +633,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private float GetCurrentLoudness()
         {
-            const float C_Fraction = 15;
-            int scanLimit = (int)(spectrumBarCount / C_Fraction);
+            const float FRACTION = 15;
+            int scanLimit = (int)(spectrumBarCount / FRACTION);
             float loudness = 0.0f;
             for (int i = 0; i < scanLimit; i++)
                 loudness += DeNullifiedSpectrumData(i);
-            return Math.Clamp(loudness / C_Fraction, 0.0f, 1.0f);
+            return Math.Clamp(loudness / FRACTION, 0.0f, 1.0f);
         }
 
         private float DeNullifiedSpectrumData(int i) => (spectrumData != null) ? spectrumData[i] : 0.0f;

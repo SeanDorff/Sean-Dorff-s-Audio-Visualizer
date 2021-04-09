@@ -7,20 +7,20 @@ namespace Common
 {
     public abstract class AbstractShader
     {
-        private const int bufferCount = 1;
-        private readonly int[] elementBufferHandle = new int[bufferCount];
-        private readonly int[] vertexBufferHandle = new int[bufferCount];
-        private readonly int[] vertexArrayHandle = new int[bufferCount];
-        private readonly SVertexesAndIndexes[] vertexesAndIndexes = new SVertexesAndIndexes[bufferCount];
-        private readonly int[] vertexesCount = new int[bufferCount];
-        private readonly int[] indexesCount = new int[bufferCount];
+        private const int BUFFER_COUNT = 1;
+        private readonly int[] elementBufferHandle = new int[BUFFER_COUNT];
+        private readonly int[] vertexBufferHandle = new int[BUFFER_COUNT];
+        private readonly int[] vertexArrayHandle = new int[BUFFER_COUNT];
+        private readonly SVertexesAndIndexes[] vertexesAndIndexes = new SVertexesAndIndexes[BUFFER_COUNT];
+        private readonly int[] vertexesCount = new int[BUFFER_COUNT];
+        private readonly int[] indexesCount = new int[BUFFER_COUNT];
         private Shader shader;
         private int currentBuffer = 0;
 
         public int ElementBufferHandle { get => elementBufferHandle[currentBuffer]; set => elementBufferHandle[currentBuffer] = value; }
         public int VertexBufferHandle { get => vertexBufferHandle[currentBuffer]; set => vertexBufferHandle[currentBuffer] = value; }
         public int VertexArrayHandle { get => vertexArrayHandle[currentBuffer]; set => vertexArrayHandle[currentBuffer] = value; }
-        public int CurrentBuffer { get => currentBuffer; set => currentBuffer = (value == bufferCount ? 0 : value); }
+        public int CurrentBuffer { get => currentBuffer; set => currentBuffer = (value == BUFFER_COUNT ? 0 : value); }
         public float[] Vertexes { get => vertexesAndIndexes[currentBuffer].Vertexes; set => vertexesAndIndexes[currentBuffer].Vertexes = value; }
         public uint[] Indexes { get => vertexesAndIndexes[currentBuffer].Indexes; set => vertexesAndIndexes[currentBuffer].Indexes = value; }
         public int VertexesCount { get => vertexesCount[currentBuffer]; set => vertexesCount[currentBuffer] = value; }
@@ -46,7 +46,7 @@ namespace Common
                     Indexes = new uint[indexArrayLength];
 
                     currentBuffer++;
-                } while (currentBuffer != bufferCount);
+                } while (currentBuffer != BUFFER_COUNT);
                 currentBuffer = 0;
             }
         }
@@ -68,7 +68,7 @@ namespace Common
                     GL.DeleteVertexArray(VertexArrayHandle);
                     currentBuffer++;
                 }
-                while (currentBuffer != bufferCount);
+                while (currentBuffer != BUFFER_COUNT);
 
                 GL.DeleteProgram(Shader.Handle);
             }
