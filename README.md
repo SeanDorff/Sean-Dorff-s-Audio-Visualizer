@@ -4,6 +4,7 @@ This Visual Studio solution taps into your Windows audio output and visualizes i
 # Controls
 Use WSAD and Space/Shift to move around or up and down. The mouse controls your viewing direction.  
 Use F to toggle fullscreen mode on or off.  
+Use R to toggle star display on or off.  
 Press Esc to quit the program.
 
 # Used NuGet packages
