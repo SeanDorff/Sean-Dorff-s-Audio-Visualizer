@@ -28,11 +28,21 @@ namespace Common
         /// </summary>
         /// <param name="name">The of the <see cref="System.Diagnostics.Stopwatch"/> used in debug output.</param>
         /// <param name="displayStartFinished">Toggles display of start an finish in debug output. Default is <c>false</c>.</param>
+        /// <example>
+        /// <code>
+        /// using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+        /// {
+        ///    Console.WriteLine("Hello World!");
+        /// }
+        /// </code>
+        /// </example>
         /// <remarks>
         ///   <para>
         ///   If <paramref name="displayStartFinished"/> is <c>false</c> only the measured running time of the <see cref="System.Diagnostics.Stopwatch"/> will be displayed in debug output.
         ///   </para>
-        ///   <para>The easist way to use this class is by calling it in a <c>using</c> clause, e.g. <c>using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true)</c>.</para>
+        ///   <para>
+        ///   The easiest way to use this class is by calling it in a <c>using</c> clause, e.g. <c>using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true)</c>.
+        ///   </para>
         /// </remarks>
         public DisposableStopwatch(string name, bool displayStartFinished = false)
         {
