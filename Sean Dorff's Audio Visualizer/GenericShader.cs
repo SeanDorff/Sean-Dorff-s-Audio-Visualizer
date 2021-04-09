@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Sean_Dorff_s_Audio_Visualizer
 {
-    internal class GenericShader : AbstractShader
+    public class GenericShader : AbstractShader
     {
         public GenericShader(uint vertexArrayLength, uint indexArrayLength) : base("Shaders/shader.vert", "Shaders/shader.frag", vertexArrayLength, indexArrayLength)
         {

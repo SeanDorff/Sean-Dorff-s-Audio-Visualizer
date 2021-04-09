@@ -33,13 +33,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private SSpectrumBar[,] spectrumBars;
 
         private readonly int starCount = 15000;
-        private SStar[] stars;
+        private Stars stars;
 
         private GenericShader genericShader;
         private readonly int spectrumBarVertexesCount;
-        private readonly int starVertexesCount;
         private readonly int spectrumBarIndexesCount;
-        private readonly int starIndexesCount;
 
         private double time;
         private readonly Random random = new();
@@ -47,6 +45,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private const float ALPHA_DIMM = 0.97f;
         private const float MOUSE_SENSITIVITY = 0.2f;
         private const float CAMERA_SPEED = 1.0f;
+        private const float DRIFT = 0.1f;
 
         public SDAV_Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -54,9 +53,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             originalSize = nativeWindowSettings.Size;
             barBorders = SplitRange(spectrumBarCount, -1.0f, 1.0f);
             spectrumBarVertexesCount = spectrumBarCount * spectrumBarGenerations * 32;
-            starVertexesCount = starCount * 8;
             spectrumBarIndexesCount = spectrumBarCount * spectrumBarGenerations * 6;
-            starIndexesCount = starCount;
         }
 
         protected override void OnLoad()
@@ -72,7 +69,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 InitWasAPIAudio();
 
                 InitSpectrumBars();
-                InitStars();
+                stars = new(starCount, ALPHA_DIMM, spectrumBarGenerations);
                 BuildShaders();
 
                 base.OnLoad();
@@ -96,23 +93,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             UpperRight = Vector4.Zero,
                             Color = Vector4.Zero
                         };
-            }
-        }
-
-        private void InitStars()
-        {
-#if (DEBUG)
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-#endif
-            {
-                stars = new SStar[starCount];
-                for (int i = 0; i < starCount; i++)
-                    stars[i] = new SStar
-                    {
-                        Position = Vector3.Zero,
-                        Generation = float.MinValue,
-                        Color = Vector4.Zero
-                    };
             }
         }
 
@@ -381,65 +361,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
-        private void UpdateStars()
-        {
-#if (DEBUG)
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-#endif
-            {
-                int remainingGenerator = starCount / spectrumBarGenerations;
-                SStar star;
-                for (int i = 0; i < starCount; i++)
-                {
-                    star = stars[i];
-                    star.Generation += 1;
-                    star.Color.W *= ALPHA_DIMM;
-                    if ((star.Generation <= 0) || (star.Generation > 150))
-                    {
-                        if (remainingGenerator-- > 0)
-                        {
-                            star.Generation = 0;
-                            star.Position = new Vector3(NextRendomFloat() * 4 - 2, NextRendomFloat() * 4 - 2, 0.0f);
-                            star.Color = Vector4.One;
-                        }
-                        else
-                        {
-                            star.Generation = float.MinValue;
-                            star.Color = Vector4.Zero;
-                        }
-                    }
-                    stars[i] = star;
-                }
-            }
-
-            TransformToVertexes();
-
-            void TransformToVertexes()
-            {
-                float[] starVertexes = new float[starCount * 8];
-                uint[] starVertexIndexes = new uint[starCount];
-
-                for (int i = 0; i < starCount; i++)
-                {
-                    SStar star = stars[i];
-                    starVertexes[i * 8] = star.Position.X;
-                    starVertexes[i * 8 + 1] = star.Position.Y;
-                    starVertexes[i * 8 + 2] = star.Position.Z;
-                    starVertexes[i * 8 + 3] = star.Generation;
-                    starVertexes[i * 8 + 4] = star.Color.X;
-                    starVertexes[i * 8 + 5] = star.Color.Y;
-                    starVertexes[i * 8 + 6] = star.Color.Z;
-                    starVertexes[i * 8 + 7] = star.Color.W;
-                    starVertexIndexes[i] = (uint)i;
-                }
-
-                Array.Copy(starVertexes, 0, genericShader.Vertexes, 0, starVertexes.Length);
-                Array.Copy(starVertexIndexes, 0, genericShader.Indexes, 0, starVertexIndexes.Length);
-            }
-
-            float NextRendomFloat() => (float)random.NextDouble();
-        }
-
         protected override void OnRenderFrame(FrameEventArgs e)
         {
 #if (DEBUG)
@@ -459,17 +380,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SendData();
                 genericShader.SetModelViewProjection(camera);
                 genericShader.SetVertexAttribPointerAndArrays();
-                genericShader.SetFloat("drift", 0.1f);
+                genericShader.SetFloat("drift", DRIFT);
                 genericShader.DrawTriangleElements();
 
-                genericShader.VertexesCount = starVertexesCount;
-                genericShader.IndexesCount = starIndexesCount;
-                UpdateStars();
+                stars.UpdateStars(genericShader);
                 genericShader.Use();
                 genericShader.SendData();
                 genericShader.SetModelViewProjection(camera);
                 genericShader.SetVertexAttribPointerAndArrays();
-                genericShader.SetFloat("drift", 0.1f);
+                genericShader.SetFloat("drift", DRIFT);
                 genericShader.DrawPointElements();
 
                 SwapBuffers();
@@ -616,7 +535,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                genericShader = new((uint)Math.Max(spectrumBarVertexesCount, starVertexesCount), (uint)Math.Max(spectrumBarIndexesCount, starIndexesCount));
+                genericShader = new((uint)Math.Max(spectrumBarVertexesCount, stars.StarVertexesCount), (uint)Math.Max(spectrumBarIndexesCount, stars.StarIndexesCount));
             }
         }
 
