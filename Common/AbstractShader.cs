@@ -110,8 +110,8 @@ namespace Common
 
         private struct SVertexesAndIndexes
         {
-            public float[] Vertexes;
-            public uint[] Indexes;
+            internal float[] Vertexes;
+            internal uint[] Indexes;
         }
     }
 }
