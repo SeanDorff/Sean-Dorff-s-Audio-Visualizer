@@ -11,22 +11,26 @@ namespace Common
 
         public DisposableStopwatch(string name, bool displayStartFinished = false)
         {
+#if (DEBUG)
             this.name = name;
             this.displayStartFinished = displayStartFinished;
             if (this.displayStartFinished)
                 Debug.WriteLine("[" + this.name + "]: Started");
             Start();
+#endif
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
+#if (DEBUG)
                 if (disposing)
                     if (displayStartFinished)
                         Debug.WriteLine("[{0}]: Finished -> {1}", name, Elapsed);
                     else
                         Debug.WriteLine("[{0}]: {1}", name, Elapsed);
+#endif
 
                 disposedValue = true;
             }
@@ -34,7 +38,9 @@ namespace Common
 
         public void Dispose()
         {
+#if (DEBUG)
             Stop();
+#endif
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }

@@ -10,7 +10,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
     {
         public GenericShader(uint vertexArrayLength, uint indexArrayLength) : base("Shaders/shader.vert", "Shaders/shader.frag", vertexArrayLength, indexArrayLength)
         {
+#if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
             {
                 SetVertexAttribPointerAndArrays();
             }
@@ -21,12 +23,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         public void SetVertexAttribPointerAndArrays()
         {
-            const int size = 4;
-            const int stride = 8 * sizeof(float);
-            const int colorOffset = size * sizeof(float);
+            const int C_Size = 4;
+            const int C_Stride = 8 * sizeof(float);
+            const int C_ColorOffset = C_Size * sizeof(float);
             BindVertexArray();
-            SetVertexAttribPointerAndArray("aPosition", size, stride, 0);
-            SetVertexAttribPointerAndArray("aColor", size, stride, colorOffset);
+            SetVertexAttribPointerAndArray("aPosition", C_Size, C_Stride, 0);
+            SetVertexAttribPointerAndArray("aColor", C_Size, C_Stride, C_ColorOffset);
         }
     }
 }

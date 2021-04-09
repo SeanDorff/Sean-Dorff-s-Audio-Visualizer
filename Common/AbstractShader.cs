@@ -29,7 +29,9 @@ namespace Common
 
         public AbstractShader(string vertexShaderFile, string fragmentShaderFile, uint vertexArrayLength, uint indexArrayLength)
         {
+#if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
             {
                 Shader = new Shader(vertexShaderFile, fragmentShaderFile);
                 do
@@ -51,7 +53,9 @@ namespace Common
 
         public void Unload()
         {
+#if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
             {
                 currentBuffer = 0;
                 do
@@ -92,7 +96,9 @@ namespace Common
 
         public void SendData()
         {
+#if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferHandle);
                 GL.BufferData(BufferTarget.ArrayBuffer, VertexesCount * sizeof(float), Vertexes, BufferUsageHint.DynamicDraw);
