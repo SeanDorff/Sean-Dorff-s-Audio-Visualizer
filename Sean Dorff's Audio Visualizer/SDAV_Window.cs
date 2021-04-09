@@ -32,8 +32,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private Stars stars;
 
         private GenericShader genericShader;
-        private readonly int spectrumBarVertexesCount;
-        private readonly int spectrumBarIndexesCount;
 
         private double time;
 
