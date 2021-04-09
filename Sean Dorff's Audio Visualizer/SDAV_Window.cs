@@ -46,8 +46,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
             : base(gameWindowSettings, nativeWindowSettings)
         {
             originalSize = nativeWindowSettings.Size;
-            spectrumBarVertexesCount = spectrumBarCount * spectrumBarGenerations * 32;
-            spectrumBarIndexesCount = spectrumBarCount * spectrumBarGenerations * 6;
         }
 
         protected override void OnLoad()
@@ -62,7 +60,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 InitCamera();
                 InitWasAPIAudio();
 
-                spectrumBars = new(spectrumBarGenerations, spectrumBarCount, ALPHA_DIMM, ref camera);
+                spectrumBars = new(spectrumBarGenerations, spectrumBarCount, ALPHA_DIMM);
                 stars = new(starCount, ALPHA_DIMM, spectrumBarGenerations);
                 BuildShaders();
 
@@ -82,9 +80,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                genericShader.VertexesCount = spectrumBarVertexesCount;
-                genericShader.IndexesCount = spectrumBarIndexesCount;
-                spectrumBars.UpdateSpectrumBars(ref genericShader, spectrumData);
+                spectrumBars.UpdateSpectrumBars(ref genericShader, spectrumData, camera.Position.Z);
                 genericShader.Use();
                 genericShader.SendData();
                 genericShader.SetModelViewProjection(camera);
@@ -92,7 +88,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SetFloat("drift", DRIFT);
                 genericShader.DrawTriangleElements();
 
-                stars.UpdateStars(genericShader);
+                stars.UpdateStars(ref genericShader);
                 genericShader.Use();
                 genericShader.SendData();
                 genericShader.SetModelViewProjection(camera);
@@ -233,7 +229,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                genericShader = new((uint)Math.Max(spectrumBarVertexesCount, stars.StarVertexesCount), (uint)Math.Max(spectrumBarIndexesCount, stars.StarIndexesCount));
+                genericShader = new((uint)Math.Max(spectrumBars.SpectrumBarVertexesCount, stars.StarVertexesCount), (uint)Math.Max(spectrumBars.SpectrumBarIndexesCount, stars.StarIndexesCount));
             }
         }
 

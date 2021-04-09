@@ -32,7 +32,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             InitStars();
         }
 
-        public void UpdateStars(GenericShader genericShader)
+        public void UpdateStars(ref GenericShader genericShader)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
@@ -66,32 +66,32 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 }
             }
 
-            TransformToVertexes();
-
-            void TransformToVertexes()
-            {
-                float[] starVertexes = new float[starCount * 8];
-                uint[] starVertexIndexes = new uint[starCount];
-
-                for (int i = 0; i < starCount; i++)
-                {
-                    SStar star = stars[i];
-                    starVertexes[i * 8] = star.Position.X;
-                    starVertexes[i * 8 + 1] = star.Position.Y;
-                    starVertexes[i * 8 + 2] = star.Position.Z;
-                    starVertexes[i * 8 + 3] = star.Generation;
-                    starVertexes[i * 8 + 4] = star.Color.X;
-                    starVertexes[i * 8 + 5] = star.Color.Y;
-                    starVertexes[i * 8 + 6] = star.Color.Z;
-                    starVertexes[i * 8 + 7] = star.Color.W;
-                    starVertexIndexes[i] = (uint)i;
-                }
-
-                Array.Copy(starVertexes, 0, genericShader.Vertexes, 0, starVertexes.Length);
-                Array.Copy(starVertexIndexes, 0, genericShader.Indexes, 0, starVertexIndexes.Length);
-            }
+            TransformToVertexes(ref genericShader);
 
             float NextRendomFloat() => (float)random.NextDouble();
+        }
+
+        private void TransformToVertexes(ref GenericShader genericShader)
+        {
+            float[] starVertexes = new float[starCount * 8];
+            uint[] starVertexIndexes = new uint[starCount];
+
+            for (int i = 0; i < starCount; i++)
+            {
+                SStar star = stars[i];
+                starVertexes[i * 8] = star.Position.X;
+                starVertexes[i * 8 + 1] = star.Position.Y;
+                starVertexes[i * 8 + 2] = star.Position.Z;
+                starVertexes[i * 8 + 3] = star.Generation;
+                starVertexes[i * 8 + 4] = star.Color.X;
+                starVertexes[i * 8 + 5] = star.Color.Y;
+                starVertexes[i * 8 + 6] = star.Color.Z;
+                starVertexes[i * 8 + 7] = star.Color.W;
+                starVertexIndexes[i] = (uint)i;
+            }
+
+            Array.Copy(starVertexes, 0, genericShader.Vertexes, 0, starVertexes.Length);
+            Array.Copy(starVertexIndexes, 0, genericShader.Indexes, 0, starVertexIndexes.Length);
         }
 
         private void InitStars()
