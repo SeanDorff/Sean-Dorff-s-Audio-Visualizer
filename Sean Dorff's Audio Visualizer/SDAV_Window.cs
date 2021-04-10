@@ -87,6 +87,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SetFloat("drift", DRIFT);
                 genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                 genericShader.SetVector3("cameraPosition", camera.Position);
+                genericShader.SetInt("primitiveType", 1);
                 genericShader.DrawTriangleElements();
 
                 if (displayStars)
@@ -99,6 +100,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     genericShader.SetFloat("drift", DRIFT);
                     genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                     genericShader.SetVector3("cameraPosition", camera.Position);
+                    genericShader.SetInt("primitiveType", 0);
                     genericShader.DrawPointElements();
                 }
 
@@ -218,6 +220,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
+                GL.Enable(EnableCap.ProgramPointSize);
                 GL.BlendFunc((BlendingFactor)BlendingFactorSrc.SrcAlpha, (BlendingFactor)BlendingFactorDest.OneMinusSrcAlpha);
             }
         }

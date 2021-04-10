@@ -91,8 +91,8 @@ namespace Common
         public void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
 
         public void SetFloat(string name, float value) => Shader.SetFloat(name, value);
-
         public void SetVector3(string name, Vector3 value) => Shader.SetVector3(name, value);
+        public void SetInt(string name, int value) => Shader.SetInt(name, value);
 
         public void SetModelViewProjection(Camera camera)
         {

@@ -51,7 +51,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         {
                             star.Generation = 0;
                             star.Position = new Vector3(NextRendomFloat() * 4 - 2, NextRendomFloat() * 4 - 2, 0.0f);
-                            star.Color = Vector4.One;
+                            star.Color = new Vector4(Vector3.One, 0.9f);
                         }
                         else
                         {

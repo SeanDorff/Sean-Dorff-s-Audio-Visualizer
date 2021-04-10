@@ -10,6 +10,7 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform float drift;
 uniform vec3 cameraPosition;
+uniform int primitiveType;
 
 void main(void)
 {
@@ -17,4 +18,7 @@ void main(void)
     distanceToCamera = abs(distance(driftedPosition, cameraPosition));
     gl_Position = vec4(driftedPosition, 1.0) * model * view * projection;
     vertexColor = aColor;
+    if (primitiveType == 0) { // points
+        gl_PointSize = 2 / distanceToCamera;
+    }
 }
