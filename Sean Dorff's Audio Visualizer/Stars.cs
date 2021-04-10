@@ -47,7 +47,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 {
                     star = stars[i];
                     star.Generation += 1;
-                    star.Color.W *= alphaDimm;
+                    //star.Color.W *= alphaDimm;
                     if ((star.Generation <= 0) || (star.Generation > 150))
                     {
                         if (remainingGenerator-- > 0)

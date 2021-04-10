@@ -104,7 +104,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         spectrumBar.LowerRight.W += 1;
                         spectrumBar.UpperLeft.W += 1;
                         spectrumBar.UpperRight.W += 1;
-                        spectrumBar.Color.W *= alphaDimm;
+                        //spectrumBar.Color.W *= alphaDimm;
                         spectrumBars[generation, bar] = spectrumBar;
                     }
             }
@@ -120,7 +120,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     LowerRight = new Vector4(barBorders[bar].Y, 0, 0, 0),
                     UpperLeft = new Vector4(barBorders[bar].X, DeNullifiedSpectrumData(bar), 0, 0),
                     UpperRight = new Vector4(barBorders[bar].Y, DeNullifiedSpectrumData(bar), 0, 0),
-                    Color = new Vector4(loudness, 1 - barOfBarCount(bar), barOfBarCount(bar), 0.75f)
+                    Color = new Vector4(loudness, 1 - barOfBarCount(bar), barOfBarCount(bar), 1f)
                 };
 
             float barOfBarCount(int bar) => bar / (float)spectrumBarCount;
