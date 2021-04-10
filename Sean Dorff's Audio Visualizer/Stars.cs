@@ -42,6 +42,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
+                int maxGeneration = spectrumBarGenerations * spectrumBarGenerationMultiplier;
                 genericShader.VertexesCount = starVertexesCount;
                 genericShader.IndexesCount = starIndexesCount;
 
@@ -50,13 +51,14 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 for (int i = 0; i < stars.Length; i++)
                 {
                     star = stars[i];
-                    star.Generation += 1;
-                    if (star.Generation > spectrumBarGenerations * spectrumBarGenerationMultiplier)
+                    if (star.Generation == maxGeneration)
                     {
                         star.Generation = 0;
                         star.Position = new Vector3(RandomPosition(), RandomPosition(), 15.0f);
                         star.Color = starColor;
                     }
+                    else
+                        star.Generation += 1;
                     stars[i] = star;
                 }
             }
