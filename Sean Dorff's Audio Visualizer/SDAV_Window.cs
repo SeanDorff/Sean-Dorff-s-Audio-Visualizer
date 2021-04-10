@@ -36,7 +36,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private double time;
 
-        private const float ALPHA_DIMM = 0.97f;
+        private const float ALPHA_DIMM = 0.99f;
         private const float MOUSE_SENSITIVITY = 0.2f;
         private const float CAMERA_SPEED = 1.0f;
         private const float DRIFT = 0.1f;
@@ -213,7 +213,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
                 GL.Enable(EnableCap.ProgramPointSize);
