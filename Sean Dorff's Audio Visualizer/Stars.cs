@@ -10,7 +10,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
     public class Stars
     {
         private readonly int starCount;
-        private readonly float alphaDimm;
         private readonly int spectrumBarGenerations;
         private SStar[] stars;
 
@@ -22,10 +21,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
         public int StarVertexesCount { get => starVertexesCount; }
         public int StarIndexesCount { get => starIndexesCount; }
 
-        public Stars(int starCount, float alphaDimm, int spectrumBarGenerations)
+        public Stars(int starCount, int spectrumBarGenerations)
         {
             this.starCount = starCount;
-            this.alphaDimm = alphaDimm;
             this.spectrumBarGenerations = spectrumBarGenerations;
             starVertexesCount = starCount * 8;
             starIndexesCount = starCount;
@@ -47,7 +45,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 {
                     star = stars[i];
                     star.Generation += 1;
-                    //star.Color.W *= alphaDimm;
                     if ((star.Generation <= 0) || (star.Generation > 150))
                     {
                         if (remainingGenerator-- > 0)

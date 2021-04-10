@@ -14,7 +14,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly SSpectrumBar[,] spectrumBars;
         private readonly int spectrumBarGenerations;
         private readonly int spectrumBarCount;
-        private readonly float alphaDimm;
 
         private readonly int spectrumBarVertexesCount;
         private readonly int spectrumBarIndexesCount;
@@ -29,11 +28,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
         public int SpectrumBarVertexesCount { get => spectrumBarVertexesCount; }
         public int SpectrumBarIndexesCount { get => spectrumBarIndexesCount; }
 
-        public SpectrumBars(int spectrumBarGenerations, int spectrumBarCount, float alphaDimm)
+        public SpectrumBars(int spectrumBarGenerations, int spectrumBarCount)
         {
             this.spectrumBarGenerations = spectrumBarGenerations;
             this.spectrumBarCount = spectrumBarCount;
-            this.alphaDimm = alphaDimm;
 
             spectrumBarVertexesCount = spectrumBarCount * spectrumBarGenerations * 32;
             spectrumBarIndexesCount = spectrumBarCount * spectrumBarGenerations * 6;
@@ -104,7 +102,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         spectrumBar.LowerRight.W += 1;
                         spectrumBar.UpperLeft.W += 1;
                         spectrumBar.UpperRight.W += 1;
-                        //spectrumBar.Color.W *= alphaDimm;
                         spectrumBars[generation, bar] = spectrumBar;
                     }
             }

@@ -7,7 +7,6 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using System;
-using System.Diagnostics;
 using System.Reflection;
 
 using WasAPI;
@@ -60,8 +59,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 InitCamera();
                 InitWasAPIAudio();
 
-                spectrumBars = new(spectrumBarGenerations, spectrumBarCount, ALPHA_DIMM);
-                stars = new(starCount, ALPHA_DIMM, spectrumBarGenerations);
+                spectrumBars = new(spectrumBarGenerations, spectrumBarCount);
+                stars = new(starCount, spectrumBarGenerations);
                 BuildShaders();
 
                 base.OnLoad();
@@ -86,7 +85,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SetModelViewProjection(camera);
                 genericShader.SetVertexAttribPointerAndArrays();
                 genericShader.SetFloat("drift", DRIFT);
-                Debug.WriteLine("C A M E R A P O S I T I O N : " + camera.Position);
+                genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                 genericShader.SetVector3("cameraPosition", camera.Position);
                 genericShader.DrawTriangleElements();
 
@@ -98,6 +97,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     genericShader.SetModelViewProjection(camera);
                     genericShader.SetVertexAttribPointerAndArrays();
                     genericShader.SetFloat("drift", DRIFT);
+                    genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                     genericShader.SetVector3("cameraPosition", camera.Position);
                     genericShader.DrawPointElements();
                 }
