@@ -28,7 +28,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly int spectrumBarGenerations = 150;
         private SpectrumBars spectrumBars;
 
-        private readonly int starCount = 15000;
+        private readonly int starsPerGeneration = 100;
+        private readonly int spectrumBarGenerationMultiplier = 2;
         private Stars stars;
         private bool displayStars = true;
 
@@ -60,7 +61,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 InitWasAPIAudio();
 
                 spectrumBars = new(spectrumBarGenerations, spectrumBarCount);
-                stars = new(starCount, spectrumBarGenerations);
+                stars = new(spectrumBarGenerations, starsPerGeneration, spectrumBarGenerationMultiplier);
+
                 BuildShaders();
 
                 base.OnLoad();
