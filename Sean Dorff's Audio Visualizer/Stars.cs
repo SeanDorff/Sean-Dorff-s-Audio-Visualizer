@@ -47,17 +47,13 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.IndexesCount = starIndexesCount;
 
                 for (int i = 0; i < stars.Length; i++)
-                {
-                    if (stars[i].Generation == maxGeneration)
+                    if (++stars[i].Generation > maxGeneration)
                         stars[i] = new SStar
                         {
                             Generation = 0,
                             Position = new Vector3(RandomPosition(), RandomPosition(), 15.0f),
                             Color = starColor
                         };
-                    else
-                        stars[i].Generation += 1;
-                }
             }
 
             TransformToVertexes(ref genericShader);
