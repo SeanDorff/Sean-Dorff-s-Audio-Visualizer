@@ -87,7 +87,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SetFloat("drift", DRIFT);
                 genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                 genericShader.SetVector3("cameraPosition", camera.Position);
-                genericShader.SetInt("primitiveType", 1);
+                genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
                 genericShader.DrawTriangleElements();
 
                 if (displayStars)
@@ -100,7 +100,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     genericShader.SetFloat("drift", DRIFT);
                     genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                     genericShader.SetVector3("cameraPosition", camera.Position);
-                    genericShader.SetInt("primitiveType", 0);
+                    genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Point));
                     genericShader.DrawPointElements();
                 }
 

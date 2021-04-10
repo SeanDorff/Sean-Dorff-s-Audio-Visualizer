@@ -1,4 +1,6 @@
 ﻿#version 460
+#define PRIMITIVE_POINT 0
+#define PRIMITIVE_TRIANGLE 1
 
 layout (location = 0) in vec4 aPosition;
 layout (location = 1) in vec4 aColor;
@@ -18,7 +20,7 @@ void main(void)
     distanceToCamera = abs(distance(driftedPosition, cameraPosition));
     gl_Position = vec4(driftedPosition, 1.0) * model * view * projection;
     vertexColor = aColor;
-    if (primitiveType == 0) { // points
+    if (primitiveType == PRIMITIVE_POINT) {
         gl_PointSize = 2 / distanceToCamera;
     }
 }
