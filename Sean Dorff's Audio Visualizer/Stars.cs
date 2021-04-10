@@ -3,7 +3,9 @@
 using OpenTK.Mathematics;
 
 using System;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Sean_Dorff_s_Audio_Visualizer
 {
@@ -101,7 +103,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
             {
                 stars = new SStar[StarCount()];
 
-                for (int generation = 0; generation < spectrumBarGenerations * spectrumBarGenerationMultiplier; generation++)
+                Parallel.ForEach(Enumerable.Range(0, spectrumBarGenerations * spectrumBarGenerationMultiplier).ToList<int>(), generation =>
+                {
                     for (int star = 0; star < starsPerGeneration; star++)
                         stars[generation * starsPerGeneration + star] = new SStar
                         {
@@ -109,7 +112,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                             Generation = generation,
                             Color = starColor
                         };
-            }
+                });
+            };
 
             int StarCount() => starsPerGeneration * spectrumBarGenerations * spectrumBarGenerationMultiplier;
         }
