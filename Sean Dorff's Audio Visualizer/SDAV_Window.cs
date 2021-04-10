@@ -89,13 +89,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                 genericShader.SetVector3("cameraPosition", camera.Position);
 
-                spectrumBars.UpdateSpectrumBars(ref genericShader, spectrumData, camera.Position.Z);
-                genericShader.Use();
-                genericShader.SendData();
-                genericShader.SetVertexAttribPointerAndArrays();
-                genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
-                genericShader.DrawTriangleElements();
-
                 if (displayStars)
                 {
                     stars.UpdateStars(ref genericShader);
@@ -105,6 +98,13 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Point));
                     genericShader.DrawPointElements();
                 }
+
+                spectrumBars.UpdateSpectrumBars(ref genericShader, spectrumData, camera.Position.Z);
+                genericShader.Use();
+                genericShader.SendData();
+                genericShader.SetVertexAttribPointerAndArrays();
+                genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
+                genericShader.DrawTriangleElements();
 
                 SwapBuffers();
 
