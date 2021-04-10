@@ -70,18 +70,19 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             float[] starVertexes = new float[stars.Length * 8];
             uint[] starVertexIndexes = new uint[stars.Length];
+            int vertexIndex = 0;
 
             for (int i = 0; i < stars.Length; i++)
             {
                 SStar star = stars[i];
-                starVertexes[i * 8] = star.Position.X;
-                starVertexes[i * 8 + 1] = star.Position.Y;
-                starVertexes[i * 8 + 2] = star.Position.Z;
-                starVertexes[i * 8 + 3] = star.Generation;
-                starVertexes[i * 8 + 4] = star.Color.X;
-                starVertexes[i * 8 + 5] = star.Color.Y;
-                starVertexes[i * 8 + 6] = star.Color.Z;
-                starVertexes[i * 8 + 7] = star.Color.W;
+                starVertexes[vertexIndex++] = star.Position.X;
+                starVertexes[vertexIndex++] = star.Position.Y;
+                starVertexes[vertexIndex++] = star.Position.Z;
+                starVertexes[vertexIndex++] = star.Generation;
+                starVertexes[vertexIndex++] = star.Color.X;
+                starVertexes[vertexIndex++] = star.Color.Y;
+                starVertexes[vertexIndex++] = star.Color.Z;
+                starVertexes[vertexIndex++] = star.Color.W;
                 starVertexIndexes[i] = (uint)i;
             }
 
