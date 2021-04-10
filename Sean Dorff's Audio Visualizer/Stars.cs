@@ -51,19 +51,11 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 {
                     star = stars[i];
                     star.Generation += 1;
-                    if (star.Generation > spectrumBarGenerations * 2)
+                    if (star.Generation > spectrumBarGenerations * spectrumBarGenerationMultiplier)
                     {
-                        if (remainingGenerator-- > 0)
-                        {
-                            star.Generation = 0;
-                            star.Position = new Vector3(RandomPosition(), RandomPosition(), 15.0f);
-                            star.Color = starColor;
-                        }
-                        else
-                        {
-                            star.Generation = float.MinValue;
-                            star.Color = Vector4.Zero;
-                        }
+                        star.Generation = 0;
+                        star.Position = new Vector3(RandomPosition(), RandomPosition(), 15.0f);
+                        star.Color = starColor;
                     }
                     stars[i] = star;
                 }
