@@ -78,15 +78,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     time -= MathHelper.TwoPi;
 
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                genericShader.SetModelViewProjection(camera);
+                genericShader.SetFloat("drift", DRIFT);
+                genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
+                genericShader.SetVector3("cameraPosition", camera.Position);
 
                 spectrumBars.UpdateSpectrumBars(ref genericShader, spectrumData, camera.Position.Z);
                 genericShader.Use();
                 genericShader.SendData();
-                genericShader.SetModelViewProjection(camera);
                 genericShader.SetVertexAttribPointerAndArrays();
-                genericShader.SetFloat("drift", DRIFT);
-                genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
-                genericShader.SetVector3("cameraPosition", camera.Position);
                 genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
                 genericShader.DrawTriangleElements();
 
@@ -95,11 +95,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     stars.UpdateStars(ref genericShader);
                     genericShader.Use();
                     genericShader.SendData();
-                    genericShader.SetModelViewProjection(camera);
                     genericShader.SetVertexAttribPointerAndArrays();
-                    genericShader.SetFloat("drift", DRIFT);
-                    genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
-                    genericShader.SetVector3("cameraPosition", camera.Position);
                     genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Point));
                     genericShader.DrawPointElements();
                 }

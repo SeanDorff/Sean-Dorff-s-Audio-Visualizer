@@ -96,9 +96,7 @@ namespace Common
 
         public void SetModelViewProjection(Camera camera)
         {
-            Shader.SetMatrix4("model", Matrix4.Identity);
-            Shader.SetMatrix4("view", camera.GetViewMatrix());
-            Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+            Shader.SetMatrix4("modelViewProjection", Matrix4.Identity * camera.GetViewMatrix() * camera.GetProjectionMatrix());
         }
 
         public void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
