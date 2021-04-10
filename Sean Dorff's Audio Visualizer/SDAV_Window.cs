@@ -57,15 +57,16 @@ namespace Sean_Dorff_s_Audio_Visualizer
             {
                 CursorGrabbed = true;
 
-                Task[] taskArray = new Task[5];
+                Task[] taskArray = new Task[4];
 
                 taskArray[0] = Task.Factory.StartNew(() => { stars = new(spectrumBarGenerations, starsPerGeneration, spectrumBarGenerationMultiplier); });
                 taskArray[1] = Task.Factory.StartNew(() => InitWasAPIAudio());
                 taskArray[2] = Task.Factory.StartNew(() => { spectrumBars = new(spectrumBarGenerations, spectrumBarCount); });
-                taskArray[3] = Task.Factory.StartNew(() => InitGL());
-                taskArray[4] = Task.Factory.StartNew(() => InitCamera());
+                taskArray[3] = Task.Factory.StartNew(() => InitCamera());
 
                 Task.WaitAll(taskArray);
+
+                InitGL();
 
                 BuildShaders();
 
