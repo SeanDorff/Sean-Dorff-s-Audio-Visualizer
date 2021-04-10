@@ -119,7 +119,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     if (keyInput.IsKeyReleased(Keys.F))
                         ToggleFullscreen();
                     if (keyInput.IsKeyReleased(Keys.R))
-                        displayStars = !displayStars;
+                        ToggleStars();
 
                     if (keyInput.IsAnyKeyDown)
                     {
@@ -205,6 +205,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 isFullScreen = !isFullScreen;
             }
+        }
+
+        private void ToggleStars()
+        {
+            displayStars = !displayStars;
+            if (displayStars)
+                GL.Enable(EnableCap.ProgramPointSize);
+            else
+                GL.Disable(EnableCap.ProgramPointSize);
         }
 
         private static void InitGL()
