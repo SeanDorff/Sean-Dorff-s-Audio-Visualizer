@@ -20,17 +20,17 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly Vector2i originalSize;
 
         private WasAPIAudio wasAPIAudio;
-        private readonly int spectrumBarCount = Configuration.GetProperty("spectrumBarCount");
-        private readonly int minFrequency = Configuration.GetProperty("minFrequency");
-        private readonly int maxFrequency = Configuration.GetProperty("maxFrequency");
+        private readonly int spectrumBarCount = Configuration.GetIntProperty("spectrumBarCount");
+        private readonly int minFrequency = Configuration.GetIntProperty("minFrequency");
+        private readonly int maxFrequency = Configuration.GetIntProperty("maxFrequency");
 
-        private readonly int spectrumBarGenerations = Configuration.GetProperty("spectrumBarGenerations");
+        private readonly int spectrumBarGenerations = Configuration.GetIntProperty("spectrumBarGenerations");
         private SpectrumBars spectrumBars;
 
-        private readonly int starsPerGeneration = Configuration.GetProperty("starsPerGeneration");
-        private readonly int spectrumBarGenerationMultiplier = Configuration.GetProperty("spectrumBarGenerationMultiplier");
+        private readonly int starsPerGeneration = Configuration.GetIntProperty("starsPerGeneration");
+        private readonly int spectrumBarGenerationMultiplier = Configuration.GetIntProperty("spectrumBarGenerationMultiplier");
         private Stars stars;
-        private bool displayStars = true;
+        private bool displayStars = Configuration.GetBoolProperty("displayStars");
 
         private GenericShader genericShader;
 

@@ -57,27 +57,51 @@ namespace Common
 
         private Configuration() { }
 
-        public static int GetProperty(string name)
+        public static int GetIntProperty(string name)
         {
             bool found = false;
             int result = int.MinValue;
+
             if (keysValues.TryGetValue(name, out ValueAndType valueAndType))
-            {
                 if (valueAndType.Type == JsonToken.Integer)
                 {
                     result = int.Parse(valueAndType.Value.ToString());
                     found = true;
                 }
-            }
+
             if (!found)
-            {
                 if (defaultKeysValues.TryGetValue(name, out valueAndType))
                     if (valueAndType.Type == JsonToken.Integer)
                     {
                         result = (int)valueAndType.Value;
                         found = true;
                     }
-            }
+
+            if (!found)
+                throw new KeyNotFoundException();
+
+            return result;
+        }
+
+        public static bool GetBoolProperty(string name)
+        {
+            bool found = false;
+            bool result = false;
+
+            if (keysValues.TryGetValue(name, out ValueAndType valueAndType))
+                if (valueAndType.Type == JsonToken.Boolean)
+                {
+                    result = bool.Parse(valueAndType.Value.ToString());
+                    found = true;
+                }
+
+            if (!found)
+                if (defaultKeysValues.TryGetValue(name, out valueAndType))
+                    if (valueAndType.Type == JsonToken.Boolean)
+                    {
+                        result = (bool)valueAndType.Value;
+                        found = true;
+                    }
 
             if (!found)
                 throw new KeyNotFoundException();
@@ -93,6 +117,7 @@ namespace Common
             defaultKeysValues.Add("spectrumBarGenerations", new ValueAndType { Value = 150, Type = JsonToken.Integer });
             defaultKeysValues.Add("starsPerGeneration", new ValueAndType { Value = 100, Type = JsonToken.Integer });
             defaultKeysValues.Add("spectrumBarGenerationMultiplier", new ValueAndType { Value = 2, Type = JsonToken.Integer });
+            defaultKeysValues.Add("displayStars", new ValueAndType { Value = true, Type = JsonToken.Boolean });
         }
 
         private struct ValueAndType

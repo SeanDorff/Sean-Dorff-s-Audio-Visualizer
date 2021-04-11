@@ -1,3 +1,4 @@
 {
-  "spectrumBarCount": 1024
+    "spectrumBarCount": 1024,
+    "displayStars": false
 }
