@@ -26,6 +26,6 @@ namespace Common
                 loudness += DeNullifiedSpectrumData(i);
             return Math.Clamp(loudness / FRACTION, 0.0f, 1.0f);
         }
-        public static float DeNullifiedSpectrumData(int i) => (spectrumData != null) ? spectrumData[i] : 0.0f;
+        public static float DeNullifiedSpectrumData(int i) => (spectrumData != null && spectrumData.Length > i) ? spectrumData[i] : 0.0f;
     }
 }

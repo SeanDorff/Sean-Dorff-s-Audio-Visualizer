@@ -39,7 +39,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
             barBorders = SplitInterval(spectrumBarCount, -1.0f, 1.0f);
 
-            spectrumBars = new SSpectrumBar[spectrumBarGenerations, spectrumBarCount * 2 * 3 * 2];
+            spectrumBars = new SSpectrumBar[spectrumBarGenerations, spectrumBarCount];
 
             InitSpectrumBars();
         }
