@@ -1,7 +1,7 @@
 # Sean Dorff's Audio Visualizer
 This Visual Studio solution taps into your Windows audio output and visualizes it as a frequency spectrum.
 
-# Releases
+# Releases & Download
 Untested releases can be found under the [Releases](https://github.com/SeanDorff/Sean-Dorff-s-Audio-Visualizer/releases) section. At the moment they are not up-to-date. If you want the latest version you have to clone or download the repository and build it yourself.
 
 # Controls
