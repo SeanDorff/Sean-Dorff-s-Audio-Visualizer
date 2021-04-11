@@ -1,4 +1,9 @@
 {
-    "spectrumBarCount": 1024,
-    "displayStars": true
+    /*"spectrumBarCount": 1024,*/
+    /*"minFrequency": 20,*/
+    /*"maxFrequency": 20000,*/
+    /*"spectrumBarGenerations": 150,*/
+    /*"starsPerGeneration": 100,*/
+    /*"spectrumBarGenerationMultiplier": 2,*/
+    /*"displayStars": true*/
 }
