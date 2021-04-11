@@ -13,7 +13,7 @@ Use `R` to toggle star display on or off.
 Press `Esc` to quit the program.
 
 # Used NuGet packages
-This solution uses two NuGet packages:
+This solution uses three NuGet packages:
 - [CSCore](https://github.com/filoe/cscore)
 - [Json.Net](https://github.com/JamesNK/Newtonsoft.Json)
 - [OpenTK](https://github.com/opentk/opentk)
