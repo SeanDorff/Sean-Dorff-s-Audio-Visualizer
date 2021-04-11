@@ -20,7 +20,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly Vector2i originalSize;
 
         private WasAPIAudio wasAPIAudio;
-        private float[] spectrumData;
         private readonly int spectrumBarCount = 1024;
         private readonly int minFrequency = 20;
         private readonly int maxFrequency = 20000;
@@ -95,7 +94,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     genericShader.DrawPointElements();
                 }
 
-                spectrumBars.UpdateSpectrumBars(ref genericShader, spectrumData, camera.Position.Z);
+                spectrumBars.UpdateSpectrumBars(ref genericShader, camera.Position.Z);
                 genericShader.SendData();
                 genericShader.SetVertexAttribPointerAndArrays();
                 genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
@@ -274,7 +273,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                wasAPIAudio = new WasAPIAudio((int)spectrumBarCount, minFrequency, maxFrequency, spectrumData => { this.spectrumData = spectrumData; });
+                wasAPIAudio = new WasAPIAudio((int)spectrumBarCount, minFrequency, maxFrequency, spectrumData =>
+                {
+                    SpectrumDataHelper.SpectrumData = spectrumData;
+                });
                 wasAPIAudio.StartListen();
             }
         }

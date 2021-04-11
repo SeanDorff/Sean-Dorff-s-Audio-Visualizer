@@ -20,8 +20,6 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private readonly Vector2[] barBorders;
 
-        private float[] spectrumData;
-
         private readonly float[] vertexes;
         private readonly uint[] indexes;
 
@@ -65,14 +63,12 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
-        public void UpdateSpectrumBars(ref GenericShader genericShader, float[] spectrumData, float cameraPositionZ)
+        public void UpdateSpectrumBars(ref GenericShader genericShader, float cameraPositionZ)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                this.spectrumData = spectrumData;
-
                 genericShader.VertexesCount = spectrumBarVertexesCount;
                 genericShader.IndexesCount = spectrumBarIndexesCount;
 
@@ -109,14 +105,14 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void AddCurrentSpectrum()
         {
-            float loudness = SpectrumDataHelper.GetCurrentLoudness(ref spectrumData);
+            float loudness = SpectrumDataHelper.GetCurrentLoudness();
             for (int bar = 0; bar < spectrumBarCount; bar++)
                 spectrumBars[0, bar] = new SSpectrumBar()
                 {
                     LowerLeft = new Vector4(barBorders[bar].X, 0, 0, 0),
                     LowerRight = new Vector4(barBorders[bar].Y, 0, 0, 0),
-                    UpperLeft = new Vector4(barBorders[bar].X, SpectrumDataHelper.DeNullifiedSpectrumData(ref spectrumData, bar), 0, 0),
-                    UpperRight = new Vector4(barBorders[bar].Y, SpectrumDataHelper.DeNullifiedSpectrumData(ref spectrumData, bar), 0, 0),
+                    UpperLeft = new Vector4(barBorders[bar].X, SpectrumDataHelper.DeNullifiedSpectrumData(bar), 0, 0),
+                    UpperRight = new Vector4(barBorders[bar].Y, SpectrumDataHelper.DeNullifiedSpectrumData(bar), 0, 0),
                     Color = new Vector4(loudness, 1 - barOfBarCount(bar), barOfBarCount(bar), 1f)
                 };
 
