@@ -20,8 +20,20 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private readonly Vector2[] barBorders;
 
-        private const int VERTEX_FLOATS_COUNT = 4 * (4 + 4);  // 32 floats = 4 corners * (Vector4 for geometry + Vector4 for color)
-        private const int VERTEX_INDEX_COUNT = 2 * 3; // 6 indexes = 2 triangles * 3 corneres
+        /// <summary>
+        /// Number of floats required for storing 4 corners with 2 Vector4s each for geometry and color.
+        /// </summary>
+        /// <remarks>
+        /// 4 corners * (Vector4 for geometry + Vector 4 for color) = 32 floats
+        /// </remarks>
+        private const int VERTEX_FLOATS_COUNT = 4 * (4 + 4);
+        /// <summary>
+        /// Number of uint index pointers required for storing 2 trianlges with 3 corners each.
+        /// </summary>
+        /// <remarks>
+        /// 2 triangles * 3 corners = 6 uint indexes
+        /// </remarks>
+        private const int VERTEX_INDEX_COUNT = 2 * 3;
 
         private readonly float[] vertexes;
         private readonly uint[] indexes;
@@ -143,7 +155,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void TransformSpectrumToVertices(int generation)
         {
-            const int STRIDE = 4 * 4 + 4 * 4; // 4 * Vector4 vertex + 4 * Vector4 color
+            const int STRIDE = VERTEX_FLOATS_COUNT;
             SSpectrumBar spectrumBar;
             int generationOffsetForVertex = generation * spectrumBarCount * STRIDE;
             int generationOffsetForIndex = generation * spectrumBarCount * 6;
@@ -195,7 +207,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 vertexes[offsetPlusBarByStride++] = ColorZ;
                 vertexes[offsetPlusBarByStride++] = ColorW;
 
-                int offsetPlusBarBy6 = generationOffsetForIndex + bar * 6;
+                int offsetPlusBarBy6 = generationOffsetForIndex + bar * VERTEX_INDEX_COUNT;
                 uint barPlusBarCount = (uint)(4 * (bar + spectrumBarCount * generation));
                 indexes[offsetPlusBarBy6++] = barPlusBarCount;
                 indexes[offsetPlusBarBy6++] = barPlusBarCount + 1;
