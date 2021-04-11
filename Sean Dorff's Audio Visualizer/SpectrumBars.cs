@@ -109,14 +109,14 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private void AddCurrentSpectrum()
         {
-            float loudness = GetCurrentLoudness();
+            float loudness = SpectrumDataHelper.GetCurrentLoudness(ref spectrumData);
             for (int bar = 0; bar < spectrumBarCount; bar++)
                 spectrumBars[0, bar] = new SSpectrumBar()
                 {
                     LowerLeft = new Vector4(barBorders[bar].X, 0, 0, 0),
                     LowerRight = new Vector4(barBorders[bar].Y, 0, 0, 0),
-                    UpperLeft = new Vector4(barBorders[bar].X, DeNullifiedSpectrumData(bar), 0, 0),
-                    UpperRight = new Vector4(barBorders[bar].Y, DeNullifiedSpectrumData(bar), 0, 0),
+                    UpperLeft = new Vector4(barBorders[bar].X, SpectrumDataHelper.DeNullifiedSpectrumData(ref spectrumData, bar), 0, 0),
+                    UpperRight = new Vector4(barBorders[bar].Y, SpectrumDataHelper.DeNullifiedSpectrumData(ref spectrumData, bar), 0, 0),
                     Color = new Vector4(loudness, 1 - barOfBarCount(bar), barOfBarCount(bar), 1f)
                 };
 
@@ -346,17 +346,5 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
             return result;
         }
-
-        private float GetCurrentLoudness()
-        {
-            const float FRACTION = 15;
-            int scanLimit = (int)(spectrumBarCount / FRACTION);
-            float loudness = 0.0f;
-            for (int i = 0; i < scanLimit; i++)
-                loudness += DeNullifiedSpectrumData(i);
-            return Math.Clamp(loudness / FRACTION, 0.0f, 1.0f);
-        }
-
-        private float DeNullifiedSpectrumData(int i) => (spectrumData != null) ? spectrumData[i] : 0.0f;
     }
 }

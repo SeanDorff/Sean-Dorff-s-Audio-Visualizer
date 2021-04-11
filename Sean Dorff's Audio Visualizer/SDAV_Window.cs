@@ -223,7 +223,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                GL.ClearColor(Color4.Black);
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
                 GL.Enable(EnableCap.ProgramPointSize);
