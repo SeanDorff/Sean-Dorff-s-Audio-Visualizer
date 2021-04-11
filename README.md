@@ -17,3 +17,6 @@ This solution uses three NuGet packages:
 - [CSCore](https://github.com/filoe/cscore)
 - [Json.Net](https://github.com/JamesNK/Newtonsoft.Json)
 - [OpenTK](https://github.com/opentk/opentk)
+
+# Quality control
+As a basic quality control this repository runs [CodeQL](https://github.com/github/codeql) on each commit.
