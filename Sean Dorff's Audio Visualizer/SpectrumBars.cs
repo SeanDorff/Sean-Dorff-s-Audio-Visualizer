@@ -20,6 +20,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
         private readonly Vector2[] barBorders;
 
+        private const int VERTEX_FLOATS_COUNT = 4 * (4 + 4);  // 32 floats = 4 corners * (Vector4 for geometry + Vector4 for color)
+        private const int VERTEX_INDEX_COUNT = 2 * 3; // 6 indexes = 2 triangles * 3 corneres
+
         private readonly float[] vertexes;
         private readonly uint[] indexes;
 
@@ -31,8 +34,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
             this.spectrumBarGenerations = spectrumBarGenerations;
             this.spectrumBarCount = spectrumBarCount;
 
-            spectrumBarVertexesCount = spectrumBarCount * spectrumBarGenerations * 32;
-            spectrumBarIndexesCount = spectrumBarCount * spectrumBarGenerations * 6;
+            spectrumBarVertexesCount = spectrumBarCount * spectrumBarGenerations * VERTEX_FLOATS_COUNT;
+            spectrumBarIndexesCount = spectrumBarCount * spectrumBarGenerations * VERTEX_INDEX_COUNT;
 
             vertexes = new float[spectrumBarVertexesCount];
             indexes = new uint[spectrumBarIndexesCount];
