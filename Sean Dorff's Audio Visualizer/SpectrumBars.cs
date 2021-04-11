@@ -60,7 +60,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         }
 
         /// <summary>
-        /// Initialises <see cref="spectrumBars"/> for a given number of <see cref="spectrumBarGenerations"/> with <see cref="spectrumBarCount"/> spectrum bars each.
+        /// Initialize <see cref="spectrumBars"/> for a given number of <see cref="spectrumBarGenerations"/> with <see cref="spectrumBarCount"/> spectrum bars each.
         /// </summary>
         private void InitSpectrumBars()
         {
