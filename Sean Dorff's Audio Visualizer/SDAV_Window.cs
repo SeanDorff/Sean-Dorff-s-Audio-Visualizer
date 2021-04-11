@@ -217,20 +217,29 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 GL.Disable(EnableCap.ProgramPointSize);
         }
 
+        /// <summary>
+        /// Initializes GL with required values
+        /// </summary>
+        /// <remarks>
+        /// <see cref="EnableCap.ProgramPointSize"/> will be switched on and off by <see cref="ToggleStars"/>.
+        /// </remarks>
         private static void InitGL()
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                GL.ClearColor(Color4.Black);
-                GL.Enable(EnableCap.DepthTest);
-                GL.Enable(EnableCap.Blend);
-                GL.Enable(EnableCap.ProgramPointSize);
-                GL.BlendFunc((BlendingFactor)BlendingFactorSrc.SrcAlpha, (BlendingFactor)BlendingFactorDest.OneMinusSrcAlpha);
+                GL.ClearColor(Color4.Black); // Background
+                GL.Enable(EnableCap.DepthTest); // Transparency
+                GL.Enable(EnableCap.Blend); // Transparency
+                GL.Enable(EnableCap.ProgramPointSize); // Star scaling
+                GL.BlendFunc((BlendingFactor)BlendingFactorSrc.SrcAlpha, (BlendingFactor)BlendingFactorDest.OneMinusSrcAlpha); // Transparency
             }
         }
 
+        /// <summary>
+        /// Initializes camera at a defined position.
+        /// </summary>
         private void InitCamera()
         {
 #if (DEBUG)
@@ -241,16 +250,24 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
+        /// <summary>
+        /// Builds the shader(s) and passes required buffer array sizes.
+        /// </summary>
         private void BuildShaders()
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                genericShader = new((uint)Math.Max(spectrumBars.SpectrumBarVertexesCount, stars.StarVertexesCount), (uint)Math.Max(spectrumBars.SpectrumBarIndexesCount, stars.StarIndexesCount));
+                genericShader = new(Max(spectrumBars.SpectrumBarVertexesCount, stars.StarVertexesCount), Max(spectrumBars.SpectrumBarIndexesCount, stars.StarIndexesCount));
             }
+
+            static uint Max(int a, int b) => (uint)Math.Max(a, b);
         }
 
+        /// <summary>
+        /// Initializes audio grabbing.
+        /// </summary>
         private void InitWasAPIAudio()
         {
 #if (DEBUG)
