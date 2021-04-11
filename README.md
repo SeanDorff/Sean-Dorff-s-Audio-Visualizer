@@ -16,3 +16,4 @@ Press `Esc` to quit the program.
 This solution uses two NuGet packages:
 - [OpenTK](https://github.com/opentk/opentk)
 - [CSCore](https://github.com/filoe/cscore)
+- [Josn.Net](https://github.com/JamesNK/Newtonsoft.Json)
