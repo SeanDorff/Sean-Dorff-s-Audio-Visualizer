@@ -37,13 +37,16 @@ namespace Sean_Dorff_s_Audio_Visualizer
             vertexes = new float[spectrumBarVertexesCount];
             indexes = new uint[spectrumBarIndexesCount];
 
-            barBorders = SplitRange(spectrumBarCount, -1.0f, 1.0f);
+            barBorders = SplitInterval(spectrumBarCount, -1.0f, 1.0f);
 
             spectrumBars = new SSpectrumBar[spectrumBarGenerations, spectrumBarCount * 2 * 3 * 2];
 
             InitSpectrumBars();
         }
 
+        /// <summary>
+        /// Initialises <see cref="spectrumBars"/> for a given number of <see cref="spectrumBarGenerations"/> with <see cref="spectrumBarCount"/> spectrum bars each.
+        /// </summary>
         private void InitSpectrumBars()
         {
 #if (DEBUG)
@@ -109,10 +112,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             for (int bar = 0; bar < spectrumBarCount; bar++)
                 spectrumBars[0, bar] = new SSpectrumBar()
                 {
-                    LowerLeft = new Vector4(barBorders[bar].X, 0, 0, 0),
-                    LowerRight = new Vector4(barBorders[bar].Y, 0, 0, 0),
-                    UpperLeft = new Vector4(barBorders[bar].X, SpectrumDataHelper.DeNullifiedSpectrumData(bar), 0, 0),
-                    UpperRight = new Vector4(barBorders[bar].Y, SpectrumDataHelper.DeNullifiedSpectrumData(bar), 0, 0),
+                    LowerLeft = new Vector4(barBorders[bar].X, 0f, 0f, 0f),
+                    LowerRight = new Vector4(barBorders[bar].Y, 0f, 0f, 0f),
+                    UpperLeft = new Vector4(barBorders[bar].X, SpectrumDataHelper.DeNullifiedSpectrumData(bar), 0f, 0f),
+                    UpperRight = new Vector4(barBorders[bar].Y, SpectrumDataHelper.DeNullifiedSpectrumData(bar), 0f, 0f),
                     Color = new Vector4(loudness, 1 - barOfBarCount(bar), barOfBarCount(bar), 1f)
                 };
 
@@ -200,6 +203,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
+        /// <summary>
+        /// Sorts the indexes pointing to the vertexes by the distance to the camera's Z position of the vertexes.
+        /// </summary>
+        /// <param name="cameraPositionZ"></param>
         private void SortVerticesByCameraDistance(float cameraPositionZ)
         {
             const int TEN_POW_SEVEN = 10000000;
@@ -332,7 +339,14 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
-        private static Vector2[] SplitRange(int chunks, float min, float max)
+        /// <summary>
+        /// Splits an interval into chunks.
+        /// </summary>
+        /// <param name="chunks">The desired number of chunks.</param>
+        /// <param name="min">The lover boundary.</param>
+        /// <param name="max">The upper boundary.</param>
+        /// <returns>A <see cref="Vector2"/> array containing the boundaries for each chunk.</returns>
+        private static Vector2[] SplitInterval(int chunks, float min, float max)
         {
             Vector2[] result = new Vector2[chunks];
             float size = (max - min) / chunks;
