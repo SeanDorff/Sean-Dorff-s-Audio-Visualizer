@@ -48,3 +48,24 @@ jobs:
 
     - name: Publish
       run: dotnet publish
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Sean Dorff's Audio Visualizer
+        path: /home/runner/work/Sean-Dorff-s-Audio-Visualizer/Sean-Dorff-s-Audio-Visualizer/Common/bin/Debug/net5.0/Common.dll
+      with:
+        name: asd
+        path: /home/runner/work/Sean-Dorff-s-Audio-Visualizer/Sean-Dorff-s-Audio-Visualizer/Common/bin/Debug/net5.0/publish/
+      with:
+        name: 3
+        path: /home/runner/work/Sean-Dorff-s-Audio-Visualizer/Sean-Dorff-s-Audio-Visualizer/WasAPI/bin/Debug/net5.0/WasAPI.dll
+      with:
+        name: 4
+        path: /home/runner/work/Sean-Dorff-s-Audio-Visualizer/Sean-Dorff-s-Audio-Visualizer/WasAPI/bin/Debug/net5.0/publish/
+      with:
+        name: 5
+        path: /home/runner/work/Sean-Dorff-s-Audio-Visualizer/Sean-Dorff-s-Audio-Visualizer/Sean Dorff's Audio Visualizer/bin/Debug/net5.0/Sean Dorff's Audio Visualizer.dll
+      with:
+        name: 6
+        path: /home/runner/work/Sean-Dorff-s-Audio-Visualizer/Sean-Dorff-s-Audio-Visualizer/Sean Dorff's Audio Visualizer/bin/Debug/net5.0/publish/
