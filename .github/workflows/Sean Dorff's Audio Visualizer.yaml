@@ -45,3 +45,6 @@ jobs:
 
     - name: Test
       run: dotnet test
+
+    - name: Publish
+      run: dotnet publish
