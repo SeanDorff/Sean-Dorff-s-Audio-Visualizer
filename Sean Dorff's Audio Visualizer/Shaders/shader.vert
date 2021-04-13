@@ -30,7 +30,7 @@ void main(void)
     vec3 driftedPosition = vec3(aPosition.xy, aPosition.z - aPosition.w * drift);
     distanceToCamera = abs(distance(driftedPosition, cameraPosition));
     if (primitiveType == PRIMITIVE_POINT) {
-        driftedPosition = driftedPosition * rotationMatrix(vec3(0.0f, 0.0f, 1.0f), aPosition.w / 20);
+        driftedPosition = driftedPosition * rotationMatrix(vec3(0.0f, 0.0f, 1.0f), aPosition.w * 0.05f);
         gl_PointSize = 2 / distanceToCamera;
     }
     gl_Position = vec4(driftedPosition, 1.0) * modelViewProjection;
