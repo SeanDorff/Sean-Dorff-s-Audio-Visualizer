@@ -20,6 +20,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly Vector2i originalSize;
 
         private WasAPIAudio wasAPIAudio;
+        private ECaptureType captureType;
+
         private readonly int spectrumBarCount = Configuration.GetIntProperty("spectrumBarCount");
         private readonly int minFrequency = Configuration.GetIntProperty("minFrequency");
         private readonly int maxFrequency = Configuration.GetIntProperty("maxFrequency");
@@ -45,6 +47,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             : base(gameWindowSettings, nativeWindowSettings)
         {
             originalSize = nativeWindowSettings.Size;
+            if (Configuration.GetStringProperty("captureType").Equals("Microphone"))
+                captureType = ECaptureType.Microphone;
+            else
+                captureType = ECaptureType.Loopback;
         }
 
         protected override void OnLoad()
@@ -120,6 +126,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                         ToggleFullscreen();
                     if (keyInput.IsKeyReleased(Keys.R))
                         ToggleStars();
+                    if (keyInput.IsKeyReleased(Keys.C))
+                        ToggleCaptureType();
 
                     if (keyInput.IsAnyKeyDown)
                     {
@@ -216,6 +224,16 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 GL.Disable(EnableCap.ProgramPointSize);
         }
 
+        private void ToggleCaptureType()
+        {
+            if (captureType == ECaptureType.Loopback)
+                captureType = ECaptureType.Microphone;
+            else
+                captureType = ECaptureType.Loopback;
+
+            wasAPIAudio.SwitchCaptureType(captureType);
+        }
+
         /// <summary>
         /// Initializes GL with required values
         /// </summary>
@@ -273,10 +291,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                wasAPIAudio = new WasAPIAudio((int)spectrumBarCount, minFrequency, maxFrequency, spectrumData =>
-                {
-                    SpectrumDataHelper.SpectrumData = spectrumData;
-                });
+                wasAPIAudio = new WasAPIAudio(captureType, (int)spectrumBarCount, minFrequency, maxFrequency, spectrumData =>
+                 {
+                     SpectrumDataHelper.SpectrumData = spectrumData;
+                 });
                 wasAPIAudio.StartListen();
             }
         }

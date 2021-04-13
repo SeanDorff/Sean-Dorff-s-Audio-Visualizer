@@ -1,4 +1,5 @@
 ﻿using CSCore;
+using CSCore.CoreAudioAPI;
 using CSCore.DSP;
 using CSCore.SoundIn;
 using CSCore.Streams;
@@ -16,7 +17,8 @@ namespace WasAPI
         private readonly int minFrequency;
         private readonly int maxFrequency;
 
-        private readonly WasapiCapture capture = new WasapiLoopbackCapture();
+        private ECaptureType captureType;
+        private WasapiCapture capture;
         private SoundInSource soundInSource;
         private BasicSpectrumProvider basicSpectrumProvider;
         private readonly Action<float[]> receiveAudio;
@@ -26,12 +28,44 @@ namespace WasAPI
 
         private bool disposedValue;
 
-        public WasAPIAudio(int spectrumSize, int minFrequency, int maxFrequency, Action<float[]> receiveAudio)
+        public WasAPIAudio(ECaptureType captureType, int spectrumSize, int minFrequency, int maxFrequency, Action<float[]> receiveAudio)
         {
+            this.captureType = captureType;
             this.spectrumSize = spectrumSize;
             this.minFrequency = minFrequency;
             this.maxFrequency = maxFrequency;
             this.receiveAudio = receiveAudio;
+            SetupWasapiCapture();
+        }
+
+        public void SwitchCaptureType(ECaptureType captureType)
+        {
+            if (this.captureType != captureType)
+            {
+                this.captureType = captureType;
+                StopListen();
+                SetupWasapiCapture();
+                StartListen();
+            }
+        }
+
+        private void SetupWasapiCapture()
+        {
+            switch (this.captureType)
+            {
+                case ECaptureType.Microphone:
+                    MMDevice defaultMicrophone;
+                    using (MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator())
+                    {
+                        defaultMicrophone = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
+                    }
+                    capture = new WasapiCapture();
+                    capture.Device = defaultMicrophone;
+                    break;
+                default: // ECaptureType.Loopback
+                    capture = new WasapiLoopbackCapture();
+                    break;
+            }
         }
 
         public void StartListen()

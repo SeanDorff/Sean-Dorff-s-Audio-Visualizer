@@ -109,6 +109,32 @@ namespace Common
             return result;
         }
 
+        public static string GetStringProperty(string name)
+        {
+            bool found = false;
+            string result = "";
+
+            if (keysValues.TryGetValue(name, out ValueAndType valueAndType))
+                if (valueAndType.Type == JsonToken.String)
+                {
+                    result = valueAndType.Value.ToString();
+                    found = true;
+                }
+
+            if (!found)
+                if (defaultKeysValues.TryGetValue(name, out valueAndType))
+                    if (valueAndType.Type == JsonToken.String)
+                    {
+                        result = (string)valueAndType.Value;
+                        found = true;
+                    }
+
+            if (!found)
+                throw new KeyNotFoundException();
+
+            return result;
+        }
+
         private static void SetDefaultKeysValues()
         {
             defaultKeysValues.Add("spectrumBarCount", new ValueAndType { Value = 1024, Type = JsonToken.Integer });
@@ -118,6 +144,7 @@ namespace Common
             defaultKeysValues.Add("starsPerGeneration", new ValueAndType { Value = 100, Type = JsonToken.Integer });
             defaultKeysValues.Add("spectrumBarGenerationMultiplier", new ValueAndType { Value = 2, Type = JsonToken.Integer });
             defaultKeysValues.Add("displayStars", new ValueAndType { Value = true, Type = JsonToken.Boolean });
+            defaultKeysValues.Add("captureType", new ValueAndType { Value = "Microphone", Type = JsonToken.String });
         }
 
         private struct ValueAndType
