@@ -144,7 +144,7 @@ namespace Common
             defaultKeysValues.Add("starsPerGeneration", new ValueAndType { Value = 100, Type = JsonToken.Integer });
             defaultKeysValues.Add("spectrumBarGenerationMultiplier", new ValueAndType { Value = 2, Type = JsonToken.Integer });
             defaultKeysValues.Add("displayStars", new ValueAndType { Value = true, Type = JsonToken.Boolean });
-            defaultKeysValues.Add("captureType", new ValueAndType { Value = "Microphone", Type = JsonToken.String });
+            defaultKeysValues.Add("captureType", new ValueAndType { Value = "Loopback", Type = JsonToken.String });
         }
 
         private struct ValueAndType
