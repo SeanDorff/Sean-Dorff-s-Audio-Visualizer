@@ -33,6 +33,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly int spectrumBarGenerationMultiplier = Configuration.GetIntProperty("spectrumBarGenerationMultiplier");
         private Stars stars;
         private bool displayStars = Configuration.GetBoolProperty("displayStars");
+        private float[] rotationHistory;
+        private float currentRotation = 0.05f;
 
         private GenericShader genericShader;
 
@@ -51,6 +53,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 captureType = ECaptureType.Microphone;
             else
                 captureType = ECaptureType.Loopback;
+            rotationHistory = new float[spectrumBarGenerations];
+            for (int i = 0; i < spectrumBarGenerations; i++)
+                rotationHistory[i] = currentRotation;
         }
 
         protected override void OnLoad()
@@ -80,6 +85,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
+                for (int i = rotationHistory.Length - 1; i > 0; i--)
+                    rotationHistory[i] = rotationHistory[i - 1];
+                currentRotation += 0.001f;
+                rotationHistory[0] = currentRotation;
                 time += e.Time;
                 if (time > MathHelper.TwoPi)
                     time -= MathHelper.TwoPi;
@@ -89,6 +98,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 genericShader.SetFloat("drift", DRIFT);
                 genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
                 genericShader.SetVector3("cameraPosition", camera.Position);
+                genericShader.SetFloatArray("rotationHistory[0]", rotationHistory);
+
                 genericShader.Use();
 
                 if (displayStars)

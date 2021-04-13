@@ -185,5 +185,17 @@ namespace Common
             GL.UseProgram(Handle);
             GL.Uniform3(_uniformLocations[name], data);
         }
+
+        public void SetFloatArray(string name, float[] data)
+        {
+            GL.UseProgram(Handle);
+            unsafe
+            {
+                fixed (float* pointerToFirst = &data[0])
+                {
+                    GL.Uniform1(_uniformLocations[name], data.Length, pointerToFirst);
+                }
+            }
+        }
     }
 }
