@@ -10,7 +10,7 @@ At the moment they are not always up to date. If you want the latest version you
 Use `WSAD` and `Space`/`Shift` to move around or up and down. The mouse controls your viewing direction.  
 Use `F` to toggle fullscreen mode on or off.  
 Use `R` to toggle star display on or off.  
-Use `C` to switch between loopback audio and microphone indput.  
+Use `C` to switch between loopback audio and microphone input.  
 Press `Esc` to quit the program.
 
 # Used NuGet packages
