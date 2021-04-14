@@ -55,12 +55,14 @@ namespace WasAPI
             {
                 case ECaptureType.Microphone:
                     MMDevice defaultMicrophone;
-                    using (MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator())
+                    using (MMDeviceEnumerator deviceEnumerator = new())
                     {
                         defaultMicrophone = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
                     }
-                    capture = new WasapiCapture();
-                    capture.Device = defaultMicrophone;
+                    capture = new WasapiCapture
+                    {
+                        Device = defaultMicrophone
+                    };
                     break;
                 default: // ECaptureType.Loopback
                     capture = new WasapiLoopbackCapture();

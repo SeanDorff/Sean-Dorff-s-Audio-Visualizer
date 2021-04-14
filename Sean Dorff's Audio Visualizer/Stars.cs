@@ -19,12 +19,18 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly int starVertexesCount;
         private readonly int starIndexesCount;
 
+        private float[] rotationHistory;
+        private float currentRotation = 0.05f;
+
         private readonly Vector4 starColor = new(Vector3.One, 0.9f);
 
         private readonly Random random = new();
 
         public int StarVertexesCount { get => starVertexesCount; }
         public int StarIndexesCount { get => starIndexesCount; }
+        public float[] RotationHistory { get => rotationHistory; }
+
+        private const float ROTATION_DIFF = 0.01f;
 
         public Stars(int spectrumBarGenerations, int starsPerGeneration, int spectrumBarGenerationMultiplier)
         {
@@ -34,6 +40,10 @@ namespace Sean_Dorff_s_Audio_Visualizer
             InitStars();
             starVertexesCount = stars.Length * 8;
             starIndexesCount = stars.Length;
+
+            rotationHistory = new float[spectrumBarGenerations];
+            for (int i = 0; i < spectrumBarGenerations; i++)
+                rotationHistory[i] = currentRotation;
         }
 
         public void UpdateStars(ref GenericShader genericShader)
@@ -60,6 +70,21 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
 
             TransformToVertexes(ref genericShader);
+        }
+
+        public void ChangeRotationSpeed(int direction)
+        {
+            if (Math.Abs(direction) != 1)
+                throw new ArgumentOutOfRangeException();
+
+            currentRotation += direction * ROTATION_DIFF;
+        }
+
+        public void UpdateRotationHistory()
+        {
+            for (int i = rotationHistory.Length - 1; i > 0; i--)
+                rotationHistory[i] = rotationHistory[i - 1];
+            rotationHistory[0] = currentRotation;
         }
 
         private void TransformToVertexes(ref GenericShader genericShader)
