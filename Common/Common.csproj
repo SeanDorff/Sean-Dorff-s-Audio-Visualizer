@@ -13,8 +13,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\Friedemann Metschies\.nuget\packages\sixlabors.fonts\1.0.0-beta0001\contentFiles\any\netstandard1.3\stylecop.json" />
+    <Content Remove="C:\Users\Friedemann Metschies\.nuget\packages\sixlabors.imagesharp.drawing\1.0.0-beta0001\contentFiles\any\netstandard1.1\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OpenTK" Version="4.6.3" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
