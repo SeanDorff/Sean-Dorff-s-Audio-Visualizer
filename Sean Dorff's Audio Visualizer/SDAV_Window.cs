@@ -262,6 +262,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 GL.Enable(EnableCap.DepthTest); // Transparency
                 GL.Enable(EnableCap.Blend); // Transparency
                 GL.Enable(EnableCap.ProgramPointSize); // Star scaling
+                GL.Enable(EnableCap.Texture2D); // Font display
                 GL.BlendFunc((BlendingFactor)BlendingFactorSrc.SrcAlpha, (BlendingFactor)BlendingFactorDest.OneMinusSrcAlpha); // Transparency
             }
         }
