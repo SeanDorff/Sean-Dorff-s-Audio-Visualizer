@@ -11,7 +11,7 @@ Use `WSAD` and `Space`/`Shift` to move around or up and down. The mouse controls
 Use `F` to toggle fullscreen mode on or off.  
 Use `R` to toggle star display on or off.  
 Use `C` to switch between loopback audio and microphone input.  
-`R` and `T` increase and decrease the star rotation speed.  
+`E` and `T` increase and decrease the star rotation speed.  
 Press `Esc` to quit the program.
 
 # Used NuGet packages
