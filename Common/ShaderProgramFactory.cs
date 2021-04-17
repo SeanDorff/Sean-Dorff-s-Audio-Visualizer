@@ -10,25 +10,25 @@ namespace Common
 
     public static class ShaderProgramFactory
     {
-        public static TriangleAndPointShader BuildTriangleAndPointShaderProgram(string vertexPath, string fragmentPath, int bufferCount = 1)
+        public static TriangleAndPointShader BuildTriangleAndPointShaderProgram(string vertexPath, string fragmentPath, Dictionary<int, EBufferTypes> bufferTypes)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
                 int shaderProgramHandle = BuildShaderProgram(vertexPath, fragmentPath, out Dictionary<string, int> uniformLocations);
-                return new TriangleAndPointShader(shaderProgramHandle, uniformLocations, bufferCount);
+                return new TriangleAndPointShader(shaderProgramHandle, uniformLocations, bufferTypes);
             }
         }
 
-        public static TextureShader BuildTextureShaderProgram(string vertexPath, string fragmentPath, int bufferCount = 1)
+        public static TextureShader BuildTextureShaderProgram(string vertexPath, string fragmentPath, Dictionary<int, EBufferTypes> bufferTypes)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
                 int shaderProgramHandle = BuildShaderProgram(vertexPath, fragmentPath, out Dictionary<string, int> uniformLocations);
-                return new TextureShader(shaderProgramHandle, uniformLocations, bufferCount);
+                return new TextureShader(shaderProgramHandle, uniformLocations, bufferTypes);
             }
         }
 

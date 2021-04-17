@@ -9,7 +9,7 @@ namespace Common
 {
     public class TriangleAndPointShader : AbstractShader
     {
-        public TriangleAndPointShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, int bufferCount = 1) : base(shaderProgramHandle, uniformLocations, bufferCount)
+        public TriangleAndPointShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, Dictionary<int, EBufferTypes> bufferTypes) : base(shaderProgramHandle, uniformLocations, bufferTypes)
         {
 
         }

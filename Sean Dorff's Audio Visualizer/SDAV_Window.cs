@@ -6,6 +6,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
+using System.Collections.Generic;
 using System.Reflection;
 
 using WasAPI;
@@ -104,7 +105,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                     triangleAndPointShader.SendData();
                     triangleAndPointShader.SetVertexAttribPointerAndArrays();
                     triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Points);
-                    triangleAndPointShader.DrawElements();
+                    triangleAndPointShader.DrawElements(PrimitiveType.Points);
                 }
 
                 triangleAndPointShader.CurrentBuffer = 1;
@@ -112,7 +113,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 triangleAndPointShader.SendData();
                 triangleAndPointShader.SetVertexAttribPointerAndArrays();
                 triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Triangles);
-                triangleAndPointShader.DrawElements();
+                triangleAndPointShader.DrawElements(PrimitiveType.Triangles);
 
                 SwapBuffers();
 
@@ -294,16 +295,20 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                triangleAndPointShader = ShaderProgramFactory.BuildTriangleAndPointShaderProgram("shaders/shader.vert", "shaders/shader.frag", 2);
+                Dictionary<int, EBufferTypes> bufferTypes = new();
+                bufferTypes.Add(0, EBufferTypes.VertexArrayObject);
+                bufferTypes.Add(1, EBufferTypes.VertexArrayObject);
+                triangleAndPointShader = ShaderProgramFactory.BuildTriangleAndPointShaderProgram("shaders/shader.vert", "shaders/shader.frag", bufferTypes);
                 triangleAndPointShader.CurrentBuffer = 0;
                 triangleAndPointShader.Vertexes = new float[stars.StarVertexesCount];
                 triangleAndPointShader.Indexes = new uint[stars.StarIndexesCount];
-                triangleAndPointShader.PrimitiveType = PrimitiveType.Points;
                 triangleAndPointShader.CurrentBuffer = 1;
                 triangleAndPointShader.Vertexes = new float[spectrumBars.SpectrumBarVertexesCount];
                 triangleAndPointShader.Indexes = new uint[spectrumBars.SpectrumBarIndexesCount];
-                triangleAndPointShader.PrimitiveType = PrimitiveType.Triangles;
-                textureShader = ShaderProgramFactory.BuildTextureShaderProgram("shaders/textureShader.vert", "shaders/textureShader.frag");
+
+                bufferTypes.Clear();
+                bufferTypes.Add(0, EBufferTypes.ArrayBuffer);
+                textureShader = ShaderProgramFactory.BuildTextureShaderProgram("shaders/textureShader.vert", "shaders/textureShader.frag", bufferTypes);
             }
         }
 
