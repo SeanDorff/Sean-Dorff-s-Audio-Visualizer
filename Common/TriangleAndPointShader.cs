@@ -31,17 +31,25 @@ namespace Common
 
         public void SetModelViewProjection(Camera camera)
         {
-            SetMatrix4("modelViewProjection", Matrix4.Identity * camera.GetViewMatrix() * camera.GetProjectionMatrix());
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+                SetMatrix4("modelViewProjection", Matrix4.Identity * camera.GetViewMatrix() * camera.GetProjectionMatrix());
         }
 
         public void SetVertexAttribPointerAndArrays()
         {
-            const int C_Size = 4;
-            const int C_Stride = 8 * sizeof(float);
-            const int C_ColorOffset = C_Size * sizeof(float);
-            BindVertexArray();
-            SetVertexAttribPointerAndArray("aPosition", C_Size, C_Stride, 0);
-            SetVertexAttribPointerAndArray("aColor", C_Size, C_Stride, C_ColorOffset);
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+            {
+                const int C_Size = 4;
+                const int C_Stride = 8 * sizeof(float);
+                const int C_ColorOffset = C_Size * sizeof(float);
+                BindVertexArray();
+                SetVertexAttribPointerAndArray("aPosition", C_Size, C_Stride, 0);
+                SetVertexAttribPointerAndArray("aColor", C_Size, C_Stride, C_ColorOffset);
+            }
         }
     }
 }

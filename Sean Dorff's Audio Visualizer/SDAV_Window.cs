@@ -33,7 +33,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private Stars stars;
         private bool displayStars = Configuration.GetBoolProperty("displayStars");
 
-        private TriangleAndPointShader newShader;
+        private TriangleAndPointShader triangleAndPointShader;
 
         private double time;
 
@@ -87,31 +87,31 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                newShader.Use();
+                triangleAndPointShader.Use();
 
-                newShader.CurrentBuffer = 0;
-                newShader.SetModelViewProjection(camera);
-                newShader.SetFloat("drift", DRIFT);
-                newShader.SetFloat("alphaDimm", ALPHA_DIMM);
-                newShader.SetVector3("cameraPosition", camera.Position);
-                newShader.SetFloatArray("rotationHistory[0]", stars.RotationHistory);
+                triangleAndPointShader.CurrentBuffer = 0;
+                triangleAndPointShader.SetModelViewProjection(camera);
+                triangleAndPointShader.SetFloat("drift", DRIFT);
+                triangleAndPointShader.SetFloat("alphaDimm", ALPHA_DIMM);
+                triangleAndPointShader.SetVector3("cameraPosition", camera.Position);
+                triangleAndPointShader.SetFloatArray("rotationHistory[0]", stars.RotationHistory);
 
                 if (displayStars)
                 {
-                    stars.UpdateStars(ref newShader);
-                    newShader.SendData();
-                    newShader.SetVertexAttribPointerAndArrays();
-                    newShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Point));
-                    newShader.DrawElements();
+                    stars.UpdateStars(ref triangleAndPointShader);
+                    triangleAndPointShader.SendData();
+                    triangleAndPointShader.SetVertexAttribPointerAndArrays();
+                    triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Points);
+                    triangleAndPointShader.DrawElements();
                 }
-                newShader.Use();
+                triangleAndPointShader.Use();
 
-                newShader.CurrentBuffer = 1;
-                spectrumBars.UpdateSpectrumBars(ref newShader, camera.Position.Z);
-                newShader.SendData();
-                newShader.SetVertexAttribPointerAndArrays();
-                newShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
-                newShader.DrawElements();
+                triangleAndPointShader.CurrentBuffer = 1;
+                spectrumBars.UpdateSpectrumBars(ref triangleAndPointShader, camera.Position.Z);
+                triangleAndPointShader.SendData();
+                triangleAndPointShader.SetVertexAttribPointerAndArrays();
+                triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Triangles);
+                triangleAndPointShader.DrawElements();
 
                 SwapBuffers();
 
@@ -204,7 +204,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         protected override void OnUnload()
         {
             wasAPIAudio.StopListen();
-            newShader.Unload();
+            triangleAndPointShader.Unload();
             base.OnUnload();
         }
 
@@ -292,15 +292,15 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                newShader = ShaderProgramFactory.BuildTriangleAndPointShaderProgram("shaders/shader.vert", "shaders/shader.frag", 2);
-                newShader.CurrentBuffer = 0;
-                newShader.Vertexes = new float[stars.StarVertexesCount];
-                newShader.Indexes = new uint[stars.StarIndexesCount];
-                newShader.PrimitiveType = PrimitiveType.Points;
-                newShader.CurrentBuffer = 1;
-                newShader.Vertexes = new float[spectrumBars.SpectrumBarVertexesCount];
-                newShader.Indexes = new uint[spectrumBars.SpectrumBarIndexesCount];
-                newShader.PrimitiveType = PrimitiveType.Triangles;
+                triangleAndPointShader = ShaderProgramFactory.BuildTriangleAndPointShaderProgram("shaders/shader.vert", "shaders/shader.frag", 2);
+                triangleAndPointShader.CurrentBuffer = 0;
+                triangleAndPointShader.Vertexes = new float[stars.StarVertexesCount];
+                triangleAndPointShader.Indexes = new uint[stars.StarIndexesCount];
+                triangleAndPointShader.PrimitiveType = PrimitiveType.Points;
+                triangleAndPointShader.CurrentBuffer = 1;
+                triangleAndPointShader.Vertexes = new float[spectrumBars.SpectrumBarVertexesCount];
+                triangleAndPointShader.Indexes = new uint[spectrumBars.SpectrumBarIndexesCount];
+                triangleAndPointShader.PrimitiveType = PrimitiveType.Triangles;
             }
         }
 
