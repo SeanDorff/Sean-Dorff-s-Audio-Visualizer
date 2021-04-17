@@ -1,51 +1,64 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Common
 {
-    public abstract class AbstractShader
+    public abstract class AbstractShader : IShader
     {
-        private const int BUFFER_COUNT = 1;
-        private readonly int[] elementBufferHandle = new int[BUFFER_COUNT];
-        private readonly int[] vertexBufferHandle = new int[BUFFER_COUNT];
-        private readonly int[] vertexArrayHandle = new int[BUFFER_COUNT];
-        private readonly SVertexesAndIndexes[] vertexesAndIndexes = new SVertexesAndIndexes[BUFFER_COUNT];
-        private readonly int[] vertexesCount = new int[BUFFER_COUNT];
-        private readonly int[] indexesCount = new int[BUFFER_COUNT];
-        private Shader shader;
+        private readonly int shaderProgramHandle;
+        private readonly Dictionary<string, int> uniformLocations;
+
+        private readonly int bufferCount = 1;
+        private readonly int[] elementBufferHandle;
+        private readonly int[] vertexBufferHandle;
+        private readonly int[] vertexArrayHandle;
+        private readonly SVertexesIndexesPrimitive[] vertexesAndIndexes;
+        private readonly int[] vertexesCount;
+        private readonly int[] indexesCount;
         private int currentBuffer = 0;
+
+        protected int ShaderProgramHandle { get => shaderProgramHandle; }
+        protected Dictionary<string, int> UniformLocations { get => uniformLocations; }
 
         /// <summary>
         /// The current <see cref="ElementBufferHandle"/>, selected by <see cref="CurrentBuffer"/>.
         /// </summary>
-        public int ElementBufferHandle { get => elementBufferHandle[currentBuffer]; set => elementBufferHandle[currentBuffer] = value; }
+        protected int ElementBufferHandle { get => elementBufferHandle[currentBuffer]; set => elementBufferHandle[currentBuffer] = value; }
         /// <summary>
         /// The current <see cref="VertexBufferHandle"/>, selected by <see cref="CurrentBuffer"/>.
         /// </summary>
-        public int VertexBufferHandle { get => vertexBufferHandle[currentBuffer]; set => vertexBufferHandle[currentBuffer] = value; }
+        protected int VertexBufferHandle { get => vertexBufferHandle[currentBuffer]; set => vertexBufferHandle[currentBuffer] = value; }
         /// <summary>
         /// The current <see cref="VertexArrayHandle"/>, select by <see cref="CurrentBuffer"/>.
         /// </summary>
-        public int VertexArrayHandle { get => vertexArrayHandle[currentBuffer]; set => vertexArrayHandle[currentBuffer] = value; }
-        /// <summary>
-        /// The current buffer number.
-        /// </summary>
-        public int CurrentBuffer { get => currentBuffer; set => currentBuffer = (value == BUFFER_COUNT ? 0 : value); }
+        protected int VertexArrayHandle { get => vertexArrayHandle[currentBuffer]; set => vertexArrayHandle[currentBuffer] = value; }
+
         public float[] Vertexes { get => vertexesAndIndexes[currentBuffer].Vertexes; set => vertexesAndIndexes[currentBuffer].Vertexes = value; }
         public uint[] Indexes { get => vertexesAndIndexes[currentBuffer].Indexes; set => vertexesAndIndexes[currentBuffer].Indexes = value; }
-        public int VertexesCount { get => vertexesCount[currentBuffer]; set => vertexesCount[currentBuffer] = value; }
-        public int IndexesCount { get => indexesCount[currentBuffer]; set => indexesCount[currentBuffer] = value; }
-        public Shader Shader { get => shader; set => shader = value; }
+        public PrimitiveType PrimitiveType { get => vertexesAndIndexes[currentBuffer].PrimitiveType; set => vertexesAndIndexes[currentBuffer].PrimitiveType = value; }
 
-        public AbstractShader(string vertexShaderFile, string fragmentShaderFile, uint vertexArrayLength, uint indexArrayLength)
+        public int CurrentBuffer { set => currentBuffer = value; }
+        public AbstractShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, int bufferCount = 1)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                Shader = new Shader(vertexShaderFile, fragmentShaderFile);
+                this.shaderProgramHandle = shaderProgramHandle;
+                this.uniformLocations = uniformLocations;
+
+                this.bufferCount = bufferCount;
+
+                elementBufferHandle = new int[bufferCount];
+                vertexBufferHandle = new int[bufferCount];
+                vertexArrayHandle = new int[bufferCount];
+                vertexesAndIndexes = new SVertexesIndexesPrimitive[bufferCount];
+                vertexesCount = new int[bufferCount];
+                indexesCount = new int[bufferCount];
+
                 do
                 {
                     VertexArrayHandle = GL.GenVertexArray();
@@ -54,77 +67,103 @@ namespace Common
                     VertexBufferHandle = GL.GenBuffer();
                     ElementBufferHandle = GL.GenBuffer();
 
-                    Vertexes = new float[vertexArrayLength];
-                    Indexes = new uint[indexArrayLength];
-
                     currentBuffer++;
-                } while (currentBuffer != BUFFER_COUNT);
+                } while (currentBuffer != bufferCount);
                 currentBuffer = 0;
             }
         }
+
+        public void DrawElements() => GL.DrawElements(PrimitiveType, Indexes.Length, DrawElementsType.UnsignedInt, 0);
+
+        #region Uniform setters
+        /// <summary>
+        /// Set a uniform float on this shader.
+        /// </summary>
+        /// <param name="name">The name of the uniform</param>
+        /// <param name="data">The data to set</param>
+        public void SetFloat(string name, float data)
+        {
+            Use();
+            GL.Uniform1(UniformLocations[name], data);
+        }
+
+        /// <summary>
+        /// Set a uniform float array on this shader.
+        /// </summary>
+        /// <param name="name">The name of the uniform</param>
+        /// <param name="data">The data to set</param>
+        public void SetFloatArray(string name, float[] data)
+        {
+            Use();
+            unsafe
+            {
+                fixed (float* pointerToFirst = &data[0])
+                    GL.Uniform1(UniformLocations[name], data.Length, pointerToFirst);
+            }
+        }
+
+        /// <summary>
+        /// Set a uniform int on this shader.
+        /// </summary>
+        /// <param name="name">The name of the uniform</param>
+        /// <param name="data">The data to set</param>
+        public void SetInt(string name, int data)
+        {
+            Use();
+            GL.Uniform1(UniformLocations[name], data);
+        }
+
+        /// <summary>
+        /// Set a uniform Matrix4 on this shader.
+        /// </summary>
+        /// <param name="name">The name of the uniform</param>
+        /// <param name="data">The data to set</param>
+        /// <remarks>
+        /// The matrix is transposed before being sent to the shader.
+        /// </remarks>
+        public void SetMatrix4(string name, Matrix4 data)
+        {
+            Use();
+            GL.UniformMatrix4(UniformLocations[name], true, ref data);
+        }
+
+        /// <summary>
+        /// Set a uniform Vector3 on this shader.
+        /// </summary>
+        /// <param name="name">The name of the uniform</param>
+        /// <param name="data">The data to set</param>
+        public void SetVector3(string name, Vector3 data)
+        {
+            Use();
+            GL.Uniform3(UniformLocations[name], data);
+        }
+        #endregion
+        /// <summary>
+        /// Wrapper method that enables the shader program.
+        /// </summary>
+        public void Use() => GL.UseProgram(ShaderProgramHandle);
 
         public void Unload()
         {
-#if (DEBUG)
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-#endif
-            {
-                currentBuffer = 0;
-                do
-                {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, VertexArrayHandle);
-                    GL.BindVertexArray(VertexArrayHandle);
-                    GL.UseProgram(Shader.Handle);
-
-                    GL.DeleteBuffer(VertexBufferHandle);
-                    GL.DeleteVertexArray(VertexArrayHandle);
-                    currentBuffer++;
-                }
-                while (currentBuffer != BUFFER_COUNT);
-
-                GL.DeleteProgram(Shader.Handle);
-            }
+            GL.DeleteProgram(ShaderProgramHandle);
         }
 
-        public void Use() => Shader.Use();
+        private int GetAttribLocation(string attribName) => GL.GetAttribLocation(ShaderProgramHandle, attribName);
 
-        public void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
-
-        public void SetFloat(string name, float value) => Shader.SetFloat(name, value);
-        public void SetVector3(string name, Vector3 value) => Shader.SetVector3(name, value);
-        public void SetInt(string name, int value) => Shader.SetInt(name, value);
-        public void SetFloatArray(string name, float[] value) => Shader.SetFloatArray(name, value);
-
-        public void SetModelViewProjection(Camera camera)
+        protected void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
         {
-            Shader.SetMatrix4("modelViewProjection", Matrix4.Identity * camera.GetViewMatrix() * camera.GetProjectionMatrix());
-        }
-
-        public void SetVertexAttribPointerAndArray(string attribute, int size, int stride, int offset)
-        {
-            int location = Shader.GetAttribLocation(attribute);
+            int location = GetAttribLocation(attribute);
             GL.EnableVertexAttribArray(location);
             GL.VertexAttribPointer(location, size, VertexAttribPointerType.Float, false, stride, offset);
         }
 
-        public void SendData()
-        {
-#if (DEBUG)
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-#endif
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferHandle);
-                GL.BufferData(BufferTarget.ArrayBuffer, VertexesCount * sizeof(float), Vertexes, BufferUsageHint.DynamicDraw);
+        protected void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
 
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferHandle);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, IndexesCount * sizeof(uint), Indexes, BufferUsageHint.DynamicDraw);
-            }
-        }
-
-        private struct SVertexesAndIndexes
+        internal struct SVertexesIndexesPrimitive
         {
             internal float[] Vertexes;
             internal uint[] Indexes;
+            internal PrimitiveType PrimitiveType;
         }
     }
 }

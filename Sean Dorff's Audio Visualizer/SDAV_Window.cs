@@ -6,7 +6,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-using System;
 using System.Reflection;
 
 using WasAPI;
@@ -34,7 +33,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private Stars stars;
         private bool displayStars = Configuration.GetBoolProperty("displayStars");
 
-        private GenericShader genericShader;
+        private TriangleAndPointShader newShader;
 
         private double time;
 
@@ -87,28 +86,32 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 stars.UpdateRotationHistory();
 
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                genericShader.SetModelViewProjection(camera);
-                genericShader.SetFloat("drift", DRIFT);
-                genericShader.SetFloat("alphaDimm", ALPHA_DIMM);
-                genericShader.SetVector3("cameraPosition", camera.Position);
-                genericShader.SetFloatArray("rotationHistory[0]", stars.RotationHistory);
 
-                genericShader.Use();
+                newShader.Use();
+
+                newShader.CurrentBuffer = 0;
+                newShader.SetModelViewProjection(camera);
+                newShader.SetFloat("drift", DRIFT);
+                newShader.SetFloat("alphaDimm", ALPHA_DIMM);
+                newShader.SetVector3("cameraPosition", camera.Position);
+                newShader.SetFloatArray("rotationHistory[0]", stars.RotationHistory);
 
                 if (displayStars)
                 {
-                    stars.UpdateStars(ref genericShader);
-                    genericShader.SendData();
-                    genericShader.SetVertexAttribPointerAndArrays();
-                    genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Point));
-                    genericShader.DrawPointElements();
+                    stars.UpdateStars(ref newShader);
+                    newShader.SendData();
+                    newShader.SetVertexAttribPointerAndArrays();
+                    newShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Point));
+                    newShader.DrawElements();
                 }
+                newShader.Use();
 
-                spectrumBars.UpdateSpectrumBars(ref genericShader, camera.Position.Z);
-                genericShader.SendData();
-                genericShader.SetVertexAttribPointerAndArrays();
-                genericShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
-                genericShader.DrawTriangleElements();
+                newShader.CurrentBuffer = 1;
+                spectrumBars.UpdateSpectrumBars(ref newShader, camera.Position.Z);
+                newShader.SendData();
+                newShader.SetVertexAttribPointerAndArrays();
+                newShader.SetInt("primitiveType", PrimitiveTypeHelper.IntValue(EPrimitiveType.Triangle));
+                newShader.DrawElements();
 
                 SwapBuffers();
 
@@ -201,7 +204,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         protected override void OnUnload()
         {
             wasAPIAudio.StopListen();
-            genericShader.Unload();
+            newShader.Unload();
             base.OnUnload();
         }
 
@@ -289,10 +292,16 @@ namespace Sean_Dorff_s_Audio_Visualizer
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                genericShader = new(Max(spectrumBars.SpectrumBarVertexesCount, stars.StarVertexesCount), Max(spectrumBars.SpectrumBarIndexesCount, stars.StarIndexesCount));
+                newShader = ShaderProgramFactory.BuildTriangleAndPointShaderProgram("shaders/shader.vert", "shaders/shader.frag", 2);
+                newShader.CurrentBuffer = 0;
+                newShader.Vertexes = new float[stars.StarVertexesCount];
+                newShader.Indexes = new uint[stars.StarIndexesCount];
+                newShader.PrimitiveType = PrimitiveType.Points;
+                newShader.CurrentBuffer = 1;
+                newShader.Vertexes = new float[spectrumBars.SpectrumBarVertexesCount];
+                newShader.Indexes = new uint[spectrumBars.SpectrumBarIndexesCount];
+                newShader.PrimitiveType = PrimitiveType.Triangles;
             }
-
-            static uint Max(int a, int b) => (uint)Math.Max(a, b);
         }
 
         /// <summary>
