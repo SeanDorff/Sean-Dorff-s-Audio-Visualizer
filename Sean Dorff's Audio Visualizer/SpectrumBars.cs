@@ -81,7 +81,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
-        public void UpdateSpectrumBars(ref TriangleAndPointShader newShader, float cameraPositionZ)
+        public void UpdateSpectrumBars(ref TriangleAndPointShader triangleAndPointShader, float cameraPositionZ)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
@@ -92,8 +92,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 TransformToVertexes();
                 SortVerticesByCameraDistance(cameraPositionZ);
 
-                Array.Copy(vertexes, 0, newShader.Vertexes, 0, vertexes.Length);
-                Array.Copy(indexes, 0, newShader.Indexes, 0, indexes.Length);
+                Array.Copy(vertexes, 0, triangleAndPointShader.Vertexes, 0, vertexes.Length);
+                Array.Copy(indexes, 0, triangleAndPointShader.Indexes, 0, indexes.Length);
             }
         }
 

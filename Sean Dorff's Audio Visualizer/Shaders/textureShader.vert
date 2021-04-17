@@ -1,6 +1,6 @@
 ﻿#version 460
 #define PRIMITIVE_POINT 0
-#define PRIMITIVE_TRIANGLE 1
+#define PRIMITIVE_TRIANGLE 4
 
 layout (location = 0) in vec2 vp;
 layout (location = 1) in vec2 vt;

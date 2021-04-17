@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Common
 {
@@ -12,20 +13,31 @@ namespace Common
 
         private static void SetSpectrumData(ref float[] data)
         {
-            if (spectrumData.Length != data.Length)
-                spectrumData = new float[data.Length];
-            spectrumData = data;
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+            {
+                if (spectrumData.Length != data.Length)
+                    spectrumData = new float[data.Length];
+                spectrumData = data;
+            }
         }
 
         public static float GetCurrentLoudness()
         {
-            const float FRACTION = 15;
-            int scanLimit = (int)(spectrumData.Length / FRACTION);
-            float loudness = 0.0f;
-            for (int i = 0; i < scanLimit; i++)
-                loudness += DeNullifiedSpectrumData(i);
-            return Math.Clamp(loudness / FRACTION, 0.0f, 1.0f);
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+            {
+                const float FRACTION = 15;
+                int scanLimit = (int)(spectrumData.Length / FRACTION);
+                float loudness = 0.0f;
+                for (int i = 0; i < scanLimit; i++)
+                    loudness += DeNullifiedSpectrumData(i);
+                return Math.Clamp(loudness / FRACTION, 0.0f, 1.0f);
+            }
         }
+
         public static float DeNullifiedSpectrumData(int i) => (spectrumData != null && spectrumData.Length > i) ? spectrumData[i] : 0.0f;
     }
 }

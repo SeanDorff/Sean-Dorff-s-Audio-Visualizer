@@ -1,8 +1,10 @@
-﻿namespace Common
+﻿using OpenTK.Graphics.OpenGL4;
+
+namespace Common
 {
     public enum EPrimitiveType
     {
-        Point = 0,
-        Triangle = 1
+        Point = PrimitiveType.Points,
+        Triangle = PrimitiveType.Triangles
     }
 }

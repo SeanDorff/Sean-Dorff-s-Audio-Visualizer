@@ -46,7 +46,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 rotationHistory[i] = currentRotation;
         }
 
-        public void UpdateStars(ref TriangleAndPointShader newShader)
+        public void UpdateStars(ref TriangleAndPointShader triangleAndPointShader)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
@@ -67,7 +67,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 }
             }
 
-            TransformToVertexes(ref newShader);
+            TransformToVertexes(ref triangleAndPointShader);
         }
 
         public void ChangeRotationSpeed(int direction)
@@ -85,7 +85,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             rotationHistory[0] = currentRotation;
         }
 
-        private void TransformToVertexes(ref TriangleAndPointShader newShader)
+        private void TransformToVertexes(ref TriangleAndPointShader triangleAndPointShader)
         {
             float[] starVertexes = new float[stars.Length * 8];
             uint[] starVertexIndexes = new uint[stars.Length];
@@ -105,8 +105,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 starVertexIndexes[i] = (uint)i;
             }
 
-            Array.Copy(starVertexes, 0, newShader.Vertexes, 0, starVertexes.Length);
-            Array.Copy(starVertexIndexes, 0, newShader.Indexes, 0, starVertexIndexes.Length);
+            Array.Copy(starVertexes, 0, triangleAndPointShader.Vertexes, 0, starVertexes.Length);
+            Array.Copy(starVertexIndexes, 0, triangleAndPointShader.Indexes, 0, starVertexIndexes.Length);
         }
 
         private void InitStars()
