@@ -1,6 +1,4 @@
-﻿
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 using System.Collections.Generic;
 using System.Reflection;
@@ -12,21 +10,6 @@ namespace Common
         public TriangleAndPointShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, Dictionary<int, EBufferTypes> bufferTypes) : base(shaderProgramHandle, uniformLocations, bufferTypes)
         {
 
-        }
-
-        public void SendData()
-        {
-#if (DEBUG)
-            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
-#endif
-            {
-                BindVertexArray();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferHandle);
-                GL.BufferData(BufferTarget.ArrayBuffer, Vertexes.Length * sizeof(float), Vertexes, BufferUsageHint.DynamicDraw);
-
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferHandle);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, Indexes.Length * sizeof(uint), Indexes, BufferUsageHint.DynamicDraw);
-            }
         }
 
         public void SetModelViewProjection(Camera camera)
@@ -46,7 +29,7 @@ namespace Common
                 const int C_Size = 4;
                 const int C_Stride = 8 * sizeof(float);
                 const int C_ColorOffset = C_Size * sizeof(float);
-                BindVertexArray();
+                BindVertexArrayObject();
                 SetVertexAttribPointerAndArray("aPosition", C_Size, C_Stride, 0);
                 SetVertexAttribPointerAndArray("aColor", C_Size, C_Stride, C_ColorOffset);
             }
