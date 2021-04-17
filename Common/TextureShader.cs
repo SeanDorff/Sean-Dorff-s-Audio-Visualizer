@@ -9,7 +9,7 @@ namespace Common
 {
     public class TextureShader : AbstractShader
     {
-        public TextureShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, int bufferCount = 1) : base(shaderProgramHandle, uniformLocations, bufferCount)
+        public TextureShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, Dictionary<int, EBufferTypes> bufferTypes) : base(shaderProgramHandle, uniformLocations, bufferTypes)
         {
 
         }

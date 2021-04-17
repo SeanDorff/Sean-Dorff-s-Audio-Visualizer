@@ -1,11 +1,12 @@
-﻿using OpenTK.Mathematics;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Common
 {
     public interface IShader
     {
-        public void DrawElements();
-        public void DrawArrays(int length);
+        public void DrawElements(PrimitiveType primitiveType);
+        public void DrawArrays(PrimitiveType primitiveType, int length);
         public void SetFloat(string name, float data);
         public void SetFloatArray(string name, float[] data);
         public void SetInt(string name, int data);

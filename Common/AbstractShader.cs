@@ -11,69 +11,107 @@ namespace Common
         private readonly int shaderProgramHandle;
         private readonly Dictionary<string, int> uniformLocations;
 
-        private readonly int bufferCount = 1;
+        private readonly int[] arrayBufferHandle;
+
         private readonly int[] elementBufferHandle;
         private readonly int[] vertexBufferHandle;
         private readonly int[] vertexArrayHandle;
         private readonly SVertexesIndexesPrimitive[] vertexesAndIndexes;
-        private readonly PrimitiveType[] primitiveTypes;
 
-        private int currentBuffer = 0;
+        private SBufferMapping[] bufferMappings;
+        private int internalVBONumber = 0;
+        private int internalVANumber = 0;
 
         protected int ShaderProgramHandle { get => shaderProgramHandle; }
         protected Dictionary<string, int> UniformLocations { get => uniformLocations; }
 
         /// <summary>
-        /// The current <see cref="ElementBufferHandle"/>, selected by <see cref="CurrentBuffer"/>.
+        /// The current <see cref="VertexArrayHandle"/>, select by <see cref="CurrentBuffer"/>.
         /// </summary>
-        protected int ElementBufferHandle { get => elementBufferHandle[currentBuffer]; set => elementBufferHandle[currentBuffer] = value; }
+        protected int VertexArrayHandle { get => vertexArrayHandle[internalVBONumber]; set => vertexArrayHandle[internalVBONumber] = value; }
         /// <summary>
         /// The current <see cref="VertexBufferHandle"/>, selected by <see cref="CurrentBuffer"/>.
         /// </summary>
-        protected int VertexBufferHandle { get => vertexBufferHandle[currentBuffer]; set => vertexBufferHandle[currentBuffer] = value; }
+        protected int VertexBufferHandle { get => vertexBufferHandle[internalVBONumber]; set => vertexBufferHandle[internalVBONumber] = value; }
         /// <summary>
-        /// The current <see cref="VertexArrayHandle"/>, select by <see cref="CurrentBuffer"/>.
+        /// The current <see cref="ElementBufferHandle"/>, selected by <see cref="CurrentBuffer"/>.
         /// </summary>
-        protected int VertexArrayHandle { get => vertexArrayHandle[currentBuffer]; set => vertexArrayHandle[currentBuffer] = value; }
+        protected int ElementBufferHandle { get => elementBufferHandle[internalVBONumber]; set => elementBufferHandle[internalVBONumber] = value; }
+        protected int ArrayBufferHandle { get => arrayBufferHandle[internalVANumber]; set => arrayBufferHandle[internalVANumber] = value; }
 
-        public float[] Vertexes { get => vertexesAndIndexes[currentBuffer].Vertexes; set => vertexesAndIndexes[currentBuffer].Vertexes = value; }
-        public uint[] Indexes { get => vertexesAndIndexes[currentBuffer].Indexes; set => vertexesAndIndexes[currentBuffer].Indexes = value; }
-        public PrimitiveType PrimitiveType { get => primitiveTypes[currentBuffer]; set => primitiveTypes[currentBuffer] = value; }
+        public float[] Vertexes { get => vertexesAndIndexes[internalVBONumber].Vertexes; set => vertexesAndIndexes[internalVBONumber].Vertexes = value; }
+        public uint[] Indexes { get => vertexesAndIndexes[internalVBONumber].Indexes; set => vertexesAndIndexes[internalVBONumber].Indexes = value; }
 
-        public int CurrentBuffer { set => currentBuffer = value; }
-        public AbstractShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, int bufferCount = 1)
+        public int CurrentBuffer { set => SetCurrentBuffer(value); }
+        public AbstractShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, Dictionary<int, EBufferTypes> bufferTypes)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
+                bufferMappings = new SBufferMapping[bufferTypes.Count];
+
                 this.shaderProgramHandle = shaderProgramHandle;
                 this.uniformLocations = uniformLocations;
 
-                this.bufferCount = bufferCount;
+                int vertexArrayObjectBufferCount = 0;
+                int arrayBufferCount = 0;
 
-                elementBufferHandle = new int[bufferCount];
-                vertexBufferHandle = new int[bufferCount];
-                vertexArrayHandle = new int[bufferCount];
-                vertexesAndIndexes = new SVertexesIndexesPrimitive[bufferCount];
-                primitiveTypes = new PrimitiveType[bufferCount];
-
-                do
+                foreach (KeyValuePair<int, EBufferTypes> bufferType in bufferTypes)
                 {
-                    VertexArrayHandle = GL.GenVertexArray();
-                    GL.BindVertexArray(VertexArrayHandle);
+                    switch (bufferType.Value)
+                    {
+                        case EBufferTypes.ArrayBuffer:
+                            bufferMappings[internalVBONumber++] = new SBufferMapping
+                            {
+                                BufferNumber = bufferType.Key,
+                                BufferType = bufferType.Value,
+                                InternalBufferNumber = arrayBufferCount++
+                            };
+                            break;
+                        default: // EBufferTypes.VertexArrayObject
+                            bufferMappings[internalVBONumber++] = new SBufferMapping
+                            {
+                                BufferNumber = bufferType.Key,
+                                BufferType = bufferType.Value,
+                                InternalBufferNumber = vertexArrayObjectBufferCount++
+                            };
+                            break;
+                    }
+                }
 
-                    VertexBufferHandle = GL.GenBuffer();
-                    ElementBufferHandle = GL.GenBuffer();
+                arrayBufferHandle = new int[arrayBufferCount];
 
-                    currentBuffer++;
-                } while (currentBuffer != bufferCount);
-                currentBuffer = 0;
+                vertexArrayHandle = new int[vertexArrayObjectBufferCount];
+                vertexBufferHandle = new int[vertexArrayObjectBufferCount];
+                elementBufferHandle = new int[vertexArrayObjectBufferCount];
+                vertexesAndIndexes = new SVertexesIndexesPrimitive[vertexArrayObjectBufferCount];
+
+                for (int i = 0; i < bufferMappings.Length; i++)
+                {
+                    switch (bufferMappings[i].BufferType)
+                    {
+                        case EBufferTypes.ArrayBuffer:
+                            internalVANumber = bufferMappings[i].InternalBufferNumber;
+                            ArrayBufferHandle = GL.GenVertexArray();
+                            break;
+                        default: // EBufferTypes.VertexArrayObject
+                            internalVBONumber = bufferMappings[i].InternalBufferNumber;
+                            VertexArrayHandle = GL.GenVertexArray();
+                            GL.BindVertexArray(VertexArrayHandle);
+
+                            VertexBufferHandle = GL.GenBuffer();
+                            ElementBufferHandle = GL.GenBuffer();
+                            break;
+                    }
+                }
+
+                internalVBONumber = 0;
             }
         }
 
-        public void DrawElements() => GL.DrawElements(PrimitiveType, Indexes.Length, DrawElementsType.UnsignedInt, 0);
-        public void DrawArrays(int length) => GL.DrawArrays(PrimitiveType, 0, length);
+        public void DrawElements(PrimitiveType primitiveType) => GL.DrawElements(primitiveType, Indexes.Length, DrawElementsType.UnsignedInt, 0);
+        public void DrawArrays(PrimitiveType primitiveType, int length) => GL.DrawArrays(primitiveType, 0, length);
 
         #region Uniform setters
         /// <summary>
@@ -159,10 +197,30 @@ namespace Common
 
         protected void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
 
+        private void SetCurrentBuffer(int bufferNumber)
+        {
+            switch (bufferMappings[bufferNumber].BufferType)
+            {
+                case EBufferTypes.ArrayBuffer:
+                    internalVANumber = bufferMappings[bufferNumber].InternalBufferNumber;
+                    break;
+                default: // EBufferTypes.VertexArrayObject
+                    internalVBONumber = bufferMappings[bufferNumber].InternalBufferNumber;
+                    break;
+            }
+        }
+
         internal struct SVertexesIndexesPrimitive
         {
             internal float[] Vertexes;
             internal uint[] Indexes;
+        }
+
+        internal struct SBufferMapping
+        {
+            internal int BufferNumber;
+            internal EBufferTypes BufferType;
+            internal int InternalBufferNumber;
         }
     }
 }
