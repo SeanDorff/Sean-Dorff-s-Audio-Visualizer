@@ -34,6 +34,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private Stars stars;
         private bool displayStars = Configuration.GetBoolProperty("displayStars");
 
+        private Text text;
+
         private TriangleAndPointShader triangleAndPointShader;
         private TextureShader textureShader;
 
@@ -68,6 +70,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 stars = new(spectrumBarGenerations, starsPerGeneration, spectrumBarGenerationMultiplier);
                 spectrumBars = new(spectrumBarGenerations, spectrumBarCount);
+                text = new();
 
                 BuildShaders();
 
@@ -102,7 +105,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 {
                     triangleAndPointShader.CurrentBuffer = 0;
                     stars.UpdateStars(ref triangleAndPointShader);
-                    triangleAndPointShader.SendData();
+                    triangleAndPointShader.SendVBOData();
                     triangleAndPointShader.SetVertexAttribPointerAndArrays();
                     triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Points);
                     triangleAndPointShader.DrawElements(PrimitiveType.Points);
@@ -110,10 +113,20 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 triangleAndPointShader.CurrentBuffer = 1;
                 spectrumBars.UpdateSpectrumBars(ref triangleAndPointShader, camera.Position.Z);
-                triangleAndPointShader.SendData();
+                triangleAndPointShader.SendVBOData();
                 triangleAndPointShader.SetVertexAttribPointerAndArrays();
                 triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Triangles);
                 triangleAndPointShader.DrawElements(PrimitiveType.Triangles);
+
+                textureShader.Use();
+                text.UpdateText(ref textureShader, "Sean Dorff", Size);
+                textureShader.CurrentBuffer = 0;
+                textureShader.SendVAData();
+                textureShader.CurrentBuffer = 1;
+                textureShader.SendVAData();
+                textureShader.SetVertexAttribPointerAndArrays();
+                textureShader.SetVector4("textColor", Vector4.One);
+                textureShader.DrawArrays(PrimitiveType.Triangles, 0);
 
                 SwapBuffers();
 
@@ -308,6 +321,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 bufferTypes.Clear();
                 bufferTypes.Add(0, EBufferTypes.ArrayBuffer);
+                bufferTypes.Add(1, EBufferTypes.ArrayBuffer);
                 textureShader = ShaderProgramFactory.BuildTextureShaderProgram("shaders/textureShader.vert", "shaders/textureShader.frag", bufferTypes);
             }
         }

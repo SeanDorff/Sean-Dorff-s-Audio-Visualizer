@@ -12,6 +12,7 @@ namespace Common
         private readonly Dictionary<string, int> uniformLocations;
 
         private readonly int[] arrayBufferHandle;
+        private float[][] arrayBuffer;
 
         private readonly int[] elementBufferHandle;
         private readonly int[] vertexBufferHandle;
@@ -41,6 +42,7 @@ namespace Common
 
         public float[] Vertexes { get => vertexesAndIndexes[internalVBONumber].Vertexes; set => vertexesAndIndexes[internalVBONumber].Vertexes = value; }
         public uint[] Indexes { get => vertexesAndIndexes[internalVBONumber].Indexes; set => vertexesAndIndexes[internalVBONumber].Indexes = value; }
+        public float[] ArrayBuffer { get => arrayBuffer[internalVANumber]; set => arrayBuffer[internalVANumber] = value; }
 
         public int CurrentBuffer { set => SetCurrentBuffer(value); }
         public AbstractShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, Dictionary<int, EBufferTypes> bufferTypes)
@@ -81,6 +83,7 @@ namespace Common
                 }
 
                 arrayBufferHandle = new int[arrayBufferCount];
+                arrayBuffer = new float[arrayBufferCount][];
 
                 vertexArrayHandle = new int[vertexArrayObjectBufferCount];
                 vertexBufferHandle = new int[vertexArrayObjectBufferCount];
@@ -94,6 +97,7 @@ namespace Common
                         case EBufferTypes.ArrayBuffer:
                             internalVANumber = bufferMappings[i].InternalBufferNumber;
                             ArrayBufferHandle = GL.GenVertexArray();
+                            GL.BindVertexArray(ArrayBufferHandle);
                             break;
                         default: // EBufferTypes.VertexArrayObject
                             internalVBONumber = bufferMappings[i].InternalBufferNumber;
@@ -113,7 +117,7 @@ namespace Common
         public void DrawElements(PrimitiveType primitiveType) => GL.DrawElements(primitiveType, Indexes.Length, DrawElementsType.UnsignedInt, 0);
         public void DrawArrays(PrimitiveType primitiveType, int length) => GL.DrawArrays(primitiveType, 0, length);
 
-        public void SendData()
+        public void SendVBOData()
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
@@ -125,6 +129,16 @@ namespace Common
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferHandle);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, Indexes.Length * sizeof(uint), Indexes, BufferUsageHint.DynamicDraw);
+            }
+        }
+
+        public void SendVAData()
+        {
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+            {
+                // TODO: Implement
             }
         }
 
@@ -189,6 +203,17 @@ namespace Common
         {
             Use();
             GL.Uniform3(UniformLocations[name], data);
+        }
+
+        /// <summary>
+        /// Set a uniform Vector4 on this shader.
+        /// </summary>
+        /// <param name="name">The name of the uniform</param>
+        /// <param name="data">The data to set</param>
+        public void SetVector4(string name, Vector4 data)
+        {
+            Use();
+            GL.Uniform4(UniformLocations[name], data);
         }
         #endregion
         /// <summary>

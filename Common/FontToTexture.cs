@@ -25,6 +25,9 @@ namespace Common
         public int TextureHeight { get => textureHeight; }
         public int TextureWidth { get => textureWidth; }
         public int TextureHandle { get => textureHandle; }
+        public string Glyphs { get => GLYPHS; }
+        public int GlyphHeight { get => GLYPH_HEIGHT; }
+        public int GlyphWidth { get => GLYPH_WIDTH; }
 
         public FontToTexture()
         {
