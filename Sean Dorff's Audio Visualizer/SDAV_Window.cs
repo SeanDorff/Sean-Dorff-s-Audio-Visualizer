@@ -34,6 +34,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private bool displayStars = Configuration.GetBoolProperty("displayStars");
 
         private TriangleAndPointShader triangleAndPointShader;
+        private TextureShader textureShader;
 
         private double time;
 
@@ -89,22 +90,22 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 triangleAndPointShader.Use();
 
-                triangleAndPointShader.CurrentBuffer = 0;
                 triangleAndPointShader.SetModelViewProjection(camera);
                 triangleAndPointShader.SetFloat("drift", DRIFT);
                 triangleAndPointShader.SetFloat("alphaDimm", ALPHA_DIMM);
                 triangleAndPointShader.SetVector3("cameraPosition", camera.Position);
                 triangleAndPointShader.SetFloatArray("rotationHistory[0]", stars.RotationHistory);
 
+
                 if (displayStars)
                 {
+                    triangleAndPointShader.CurrentBuffer = 0;
                     stars.UpdateStars(ref triangleAndPointShader);
                     triangleAndPointShader.SendData();
                     triangleAndPointShader.SetVertexAttribPointerAndArrays();
                     triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Points);
                     triangleAndPointShader.DrawElements();
                 }
-                triangleAndPointShader.Use();
 
                 triangleAndPointShader.CurrentBuffer = 1;
                 spectrumBars.UpdateSpectrumBars(ref triangleAndPointShader, camera.Position.Z);
@@ -205,6 +206,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         {
             wasAPIAudio.StopListen();
             triangleAndPointShader.Unload();
+            textureShader.Unload();
             base.OnUnload();
         }
 
@@ -301,6 +303,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 triangleAndPointShader.Vertexes = new float[spectrumBars.SpectrumBarVertexesCount];
                 triangleAndPointShader.Indexes = new uint[spectrumBars.SpectrumBarIndexesCount];
                 triangleAndPointShader.PrimitiveType = PrimitiveType.Triangles;
+                textureShader = ShaderProgramFactory.BuildTextureShaderProgram("shaders/textureShader.vert", "shaders/textureShader.frag");
             }
         }
 

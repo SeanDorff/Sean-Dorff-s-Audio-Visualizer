@@ -16,6 +16,7 @@ namespace Common
         private readonly int[] vertexBufferHandle;
         private readonly int[] vertexArrayHandle;
         private readonly SVertexesIndexesPrimitive[] vertexesAndIndexes;
+        private readonly PrimitiveType[] primitiveTypes;
         private readonly int[] vertexesCount;
         private readonly int[] indexesCount;
         private int currentBuffer = 0;
@@ -38,7 +39,7 @@ namespace Common
 
         public float[] Vertexes { get => vertexesAndIndexes[currentBuffer].Vertexes; set => vertexesAndIndexes[currentBuffer].Vertexes = value; }
         public uint[] Indexes { get => vertexesAndIndexes[currentBuffer].Indexes; set => vertexesAndIndexes[currentBuffer].Indexes = value; }
-        public PrimitiveType PrimitiveType { get => vertexesAndIndexes[currentBuffer].PrimitiveType; set => vertexesAndIndexes[currentBuffer].PrimitiveType = value; }
+        public PrimitiveType PrimitiveType { get => primitiveTypes[currentBuffer]; set => primitiveTypes[currentBuffer] = value; }
 
         public int CurrentBuffer { set => currentBuffer = value; }
         public AbstractShader(int shaderProgramHandle, Dictionary<string, int> uniformLocations, int bufferCount = 1)
@@ -56,6 +57,7 @@ namespace Common
                 vertexBufferHandle = new int[bufferCount];
                 vertexArrayHandle = new int[bufferCount];
                 vertexesAndIndexes = new SVertexesIndexesPrimitive[bufferCount];
+                primitiveTypes = new PrimitiveType[bufferCount];
                 vertexesCount = new int[bufferCount];
                 indexesCount = new int[bufferCount];
 
@@ -74,6 +76,7 @@ namespace Common
         }
 
         public void DrawElements() => GL.DrawElements(PrimitiveType, Indexes.Length, DrawElementsType.UnsignedInt, 0);
+        public void DrawArrays(int length) => GL.DrawArrays(PrimitiveType, 0, length);
 
         #region Uniform setters
         /// <summary>
@@ -163,7 +166,6 @@ namespace Common
         {
             internal float[] Vertexes;
             internal uint[] Indexes;
-            internal PrimitiveType PrimitiveType;
         }
     }
 }
