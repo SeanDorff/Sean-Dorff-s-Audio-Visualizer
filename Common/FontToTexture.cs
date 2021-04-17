@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -10,7 +11,7 @@ using SDIPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Common
 {
-    public class FontToTexture
+    public class FontToTexture : IDisposable
     {
         private const string GLYPHS = " !\"#$%&'()*+,-./0123456789:;<=>?@AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz[\\]^_";
         private const int GLYPH_HEIGHT = 20;
@@ -18,6 +19,7 @@ namespace Common
         private int textureWidth;
         private int textureHeight;
         private int textureHandle;
+        private bool disposedValue;
 
         public int TextureHeight { get => textureHeight; }
         public int TextureWidth { get => textureWidth; }
@@ -25,7 +27,9 @@ namespace Common
 
         public FontToTexture()
         {
-            using Bitmap bitmap = new(GLYPHS.Length * GLYPH_WIDTH, GLYPH_HEIGHT, SDIPixelFormat.Format32bppArgb);
+            int width = NextPow2(GLYPHS.Length * GLYPH_WIDTH);
+            int height = NextPow2(GLYPH_HEIGHT);
+            using Bitmap bitmap = new(width, height, SDIPixelFormat.Format32bppArgb);
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
                 graphics.SmoothingMode = SmoothingMode.HighQuality;
@@ -49,6 +53,36 @@ namespace Common
             textureWidth = bitmap.Width;
             textureHeight = bitmap.Height;
             return textureHandle;
+        }
+
+        private static int NextPow2(int target)
+        {
+            int number = 1;
+            do
+            {
+                number *= 2;
+            }
+            while (number < target);
+            return number;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    GL.DeleteTexture(TextureHandle);
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

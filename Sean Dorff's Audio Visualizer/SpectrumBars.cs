@@ -81,24 +81,20 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
         }
 
-        public void UpdateSpectrumBars(ref GenericShader genericShader, float cameraPositionZ)
+        public void UpdateSpectrumBars(ref TriangleAndPointShader newShader, float cameraPositionZ)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                genericShader.VertexesCount = spectrumBarVertexesCount;
-                genericShader.IndexesCount = spectrumBarIndexesCount;
-
                 MoveBarGenerations();
                 AddCurrentSpectrum();
                 TransformToVertexes();
                 SortVerticesByCameraDistance(cameraPositionZ);
 
-                Array.Copy(vertexes, 0, genericShader.Vertexes, 0, vertexes.Length);
-                Array.Copy(indexes, 0, genericShader.Indexes, 0, indexes.Length);
+                Array.Copy(vertexes, 0, newShader.Vertexes, 0, vertexes.Length);
+                Array.Copy(indexes, 0, newShader.Indexes, 0, indexes.Length);
             }
-
         }
 
         private void MoveBarGenerations()

@@ -19,7 +19,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
         private readonly int starVertexesCount;
         private readonly int starIndexesCount;
 
-        private float[] rotationHistory;
+        private readonly float[] rotationHistory;
         private float currentRotation = 0.05f;
 
         private readonly Vector4 starColor = new(Vector3.One, 0.9f);
@@ -46,15 +46,13 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 rotationHistory[i] = currentRotation;
         }
 
-        public void UpdateStars(ref GenericShader genericShader)
+        public void UpdateStars(ref TriangleAndPointShader newShader)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
                 int maxGeneration = spectrumBarGenerations * spectrumBarGenerationMultiplier;
-                genericShader.VertexesCount = starVertexesCount;
-                genericShader.IndexesCount = starIndexesCount;
 
                 for (int i = 0; i < stars.Length; i++)
                 {
@@ -69,13 +67,13 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 }
             }
 
-            TransformToVertexes(ref genericShader);
+            TransformToVertexes(ref newShader);
         }
 
         public void ChangeRotationSpeed(int direction)
         {
             if (Math.Abs(direction) != 1)
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(paramName: nameof(direction));
 
             currentRotation += direction * ROTATION_DIFF;
         }
@@ -87,7 +85,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
             rotationHistory[0] = currentRotation;
         }
 
-        private void TransformToVertexes(ref GenericShader genericShader)
+        private void TransformToVertexes(ref TriangleAndPointShader newShader)
         {
             float[] starVertexes = new float[stars.Length * 8];
             uint[] starVertexIndexes = new uint[stars.Length];
@@ -107,8 +105,8 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 starVertexIndexes[i] = (uint)i;
             }
 
-            Array.Copy(starVertexes, 0, genericShader.Vertexes, 0, starVertexes.Length);
-            Array.Copy(starVertexIndexes, 0, genericShader.Indexes, 0, starVertexIndexes.Length);
+            Array.Copy(starVertexes, 0, newShader.Vertexes, 0, starVertexes.Length);
+            Array.Copy(starVertexIndexes, 0, newShader.Indexes, 0, starVertexIndexes.Length);
         }
 
         private void InitStars()
