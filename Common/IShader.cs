@@ -5,6 +5,7 @@ namespace Common
     public interface IShader
     {
         public void DrawElements();
+        public void DrawArrays(int length);
         public void SetFloat(string name, float data);
         public void SetFloatArray(string name, float[] data);
         public void SetInt(string name, int data);

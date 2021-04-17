@@ -10,7 +10,29 @@ namespace Common
 
     public static class ShaderProgramFactory
     {
-        public static TriangleAndPointShader BuildTriangleAndPointShaderProgram(string vertexPath, string fragmentPath, int bufferCount)
+        public static TriangleAndPointShader BuildTriangleAndPointShaderProgram(string vertexPath, string fragmentPath, int bufferCount = 1)
+        {
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+            {
+                int shaderProgramHandle = BuildShaderProgram(vertexPath, fragmentPath, out Dictionary<string, int> uniformLocations);
+                return new TriangleAndPointShader(shaderProgramHandle, uniformLocations, bufferCount);
+            }
+        }
+
+        public static TextureShader BuildTextureShaderProgram(string vertexPath, string fragmentPath, int bufferCount = 1)
+        {
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+            {
+                int shaderProgramHandle = BuildShaderProgram(vertexPath, fragmentPath, out Dictionary<string, int> uniformLocations);
+                return new TextureShader(shaderProgramHandle, uniformLocations, bufferCount);
+            }
+        }
+
+        private static int BuildShaderProgram(string vertexPath, string fragmentPath, out Dictionary<string, int> uniformLocations)
         {
 #if (DEBUG)
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
@@ -24,9 +46,9 @@ namespace Common
                 CleanUpShader(shaderProgramHandle, vertexShaderHandle);
                 CleanUpShader(shaderProgramHandle, fragmentShaderHandle);
 
-                Dictionary<string, int> uniformLocations = GetUniformLocations(shaderProgramHandle);
+                uniformLocations = GetUniformLocations(shaderProgramHandle);
 
-                return new TriangleAndPointShader(shaderProgramHandle, uniformLocations, bufferCount);
+                return shaderProgramHandle;
             }
         }
 
