@@ -17,8 +17,7 @@ namespace Common
         private readonly int[] vertexArrayHandle;
         private readonly SVertexesIndexesPrimitive[] vertexesAndIndexes;
         private readonly PrimitiveType[] primitiveTypes;
-        private readonly int[] vertexesCount;
-        private readonly int[] indexesCount;
+
         private int currentBuffer = 0;
 
         protected int ShaderProgramHandle { get => shaderProgramHandle; }
@@ -58,8 +57,6 @@ namespace Common
                 vertexArrayHandle = new int[bufferCount];
                 vertexesAndIndexes = new SVertexesIndexesPrimitive[bufferCount];
                 primitiveTypes = new PrimitiveType[bufferCount];
-                vertexesCount = new int[bufferCount];
-                indexesCount = new int[bufferCount];
 
                 do
                 {
