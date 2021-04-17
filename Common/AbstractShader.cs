@@ -113,6 +113,21 @@ namespace Common
         public void DrawElements(PrimitiveType primitiveType) => GL.DrawElements(primitiveType, Indexes.Length, DrawElementsType.UnsignedInt, 0);
         public void DrawArrays(PrimitiveType primitiveType, int length) => GL.DrawArrays(primitiveType, 0, length);
 
+        public void SendData()
+        {
+#if (DEBUG)
+            using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
+#endif
+            {
+                BindVertexArrayObject();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferHandle);
+                GL.BufferData(BufferTarget.ArrayBuffer, Vertexes.Length * sizeof(float), Vertexes, BufferUsageHint.DynamicDraw);
+
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferHandle);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, Indexes.Length * sizeof(uint), Indexes, BufferUsageHint.DynamicDraw);
+            }
+        }
+
         #region Uniform setters
         /// <summary>
         /// Set a uniform float on this shader.
@@ -195,7 +210,8 @@ namespace Common
             GL.VertexAttribPointer(location, size, VertexAttribPointerType.Float, false, stride, offset);
         }
 
-        protected void BindVertexArray() => GL.BindVertexArray(VertexArrayHandle);
+        protected void BindVertexArrayObject() => GL.BindVertexArray(VertexArrayHandle);
+        protected void BindArrayBuffer() => GL.BindVertexArray(ArrayBufferHandle);
 
         private void SetCurrentBuffer(int bufferNumber)
         {
