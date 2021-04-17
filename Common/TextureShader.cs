@@ -26,12 +26,11 @@ namespace Common
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                const int C_Size = 4;
-                const int C_Stride = 8 * sizeof(float);
-                const int C_ColorOffset = C_Size * sizeof(float);
+                const int C_Size = 0;
+                const int C_Stride = 0;
                 BindArrayBuffer();
-                SetVertexAttribPointerAndArray("aPosition", C_Size, C_Stride, 0);
-                SetVertexAttribPointerAndArray("aColor", C_Size, C_Stride, C_ColorOffset);
+                SetVertexAttribPointerAndArray("vp", C_Size, C_Stride, 0);
+                SetVertexAttribPointerAndArray("vt", C_Size, C_Stride, 0);
             }
         }
     }

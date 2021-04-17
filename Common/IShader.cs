@@ -12,6 +12,7 @@ namespace Common
         public void SetInt(string name, int data);
         public void SetMatrix4(string name, Matrix4 data);
         public void SetVector3(string name, Vector3 data);
+        public void SetVector4(string name, Vector4 data);
         public void Use();
         public void Unload();
     }
