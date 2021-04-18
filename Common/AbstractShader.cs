@@ -12,14 +12,14 @@ namespace Common
         private readonly Dictionary<string, int> uniformLocations;
 
         private readonly int[] arrayBufferHandle;
-        private float[][] arrayBuffer;
+        private readonly float[][] arrayBuffer;
 
         private readonly int[] elementBufferHandle;
         private readonly int[] vertexBufferHandle;
         private readonly int[] vertexArrayHandle;
         private readonly SVertexesIndexesPrimitive[] vertexesAndIndexes;
 
-        private SBufferMapping[] bufferMappings;
+        private readonly SBufferMapping[] bufferMappings;
         private int internalVBONumber = 0;
         private int internalVANumber = 0;
 
@@ -61,25 +61,21 @@ namespace Common
 
                 foreach (KeyValuePair<int, EBufferTypes> bufferType in bufferTypes)
                 {
-                    switch (bufferType.Value)
+                    bufferMappings[internalVBONumber++] = bufferType.Value switch
                     {
-                        case EBufferTypes.ArrayBuffer:
-                            bufferMappings[internalVBONumber++] = new SBufferMapping
-                            {
-                                BufferNumber = bufferType.Key,
-                                BufferType = bufferType.Value,
-                                InternalBufferNumber = arrayBufferCount++
-                            };
-                            break;
-                        default: // EBufferTypes.VertexArrayObject
-                            bufferMappings[internalVBONumber++] = new SBufferMapping
-                            {
-                                BufferNumber = bufferType.Key,
-                                BufferType = bufferType.Value,
-                                InternalBufferNumber = vertexArrayObjectBufferCount++
-                            };
-                            break;
-                    }
+                        EBufferTypes.ArrayBuffer => new SBufferMapping
+                        {
+                            BufferNumber = bufferType.Key,
+                            BufferType = bufferType.Value,
+                            InternalBufferNumber = arrayBufferCount++
+                        },
+                        _ => new SBufferMapping // EBufferTypes.VertexArrayObject
+                        {
+                            BufferNumber = bufferType.Key,
+                            BufferType = bufferType.Value,
+                            InternalBufferNumber = vertexArrayObjectBufferCount++
+                        },
+                    };
                 }
 
                 arrayBufferHandle = new int[arrayBufferCount];

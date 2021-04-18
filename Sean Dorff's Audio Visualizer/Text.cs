@@ -2,8 +2,6 @@
 
 using OpenTK.Mathematics;
 
-using System;
-
 namespace Sean_Dorff_s_Audio_Visualizer
 {
     public class Text
@@ -67,9 +65,9 @@ namespace Sean_Dorff_s_Audio_Visualizer
             }
 
             textureShader.CurrentBuffer = 0;
-            Array.Copy(pointCoords, 0, textureShader.ArrayBuffer, 0, pointCoords.Length);
+            textureShader.ArrayBuffer = pointCoords;
             textureShader.CurrentBuffer = 1;
-            Array.Copy(texCoords, 0, textureShader.ArrayBuffer, 0, pointCoords.Length);
+            textureShader.ArrayBuffer = texCoords;
         }
 
         private int FindGlyph(char c) => fontToTexture.Glyphs.IndexOf(c);

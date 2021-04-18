@@ -19,7 +19,7 @@ namespace Common
         private const int GLYPH_WIDTH = 20;
         private int textureWidth;
         private int textureHeight;
-        private int textureHandle;
+        private readonly int textureHandle;
         private bool disposedValue;
 
         public int TextureHeight { get => textureHeight; }
@@ -27,7 +27,8 @@ namespace Common
         public int TextureHandle { get => textureHandle; }
         public string Glyphs { get => GLYPHS; }
         public int GlyphHeight { get => GLYPH_HEIGHT; }
-        public int GlyphWidth { get => GLYPH_WIDTH; }
+        public int GlyphWidth
+        { get => GLYPH_WIDTH; }
 
         public FontToTexture()
         {
