@@ -92,42 +92,51 @@ namespace Sean_Dorff_s_Audio_Visualizer
 
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                triangleAndPointShader.Use();
+                    triangleAndPointShader.Use();
 
-                triangleAndPointShader.SetModelViewProjection(camera);
-                triangleAndPointShader.SetFloat("drift", DRIFT);
-                triangleAndPointShader.SetFloat("alphaDimm", ALPHA_DIMM);
-                triangleAndPointShader.SetVector3("cameraPosition", camera.Position);
-                triangleAndPointShader.SetFloatArray("rotationHistory[0]", stars.RotationHistory);
+                    triangleAndPointShader.SetModelViewProjection(camera);
+                    triangleAndPointShader.SetFloat("drift", DRIFT);
+                    triangleAndPointShader.SetFloat("alphaDimm", ALPHA_DIMM);
+                    triangleAndPointShader.SetVector3("cameraPosition", camera.Position);
+                    triangleAndPointShader.SetFloatArray("rotationHistory[0]", stars.RotationHistory);
 
 
-                if (displayStars)
-                {
-                    triangleAndPointShader.CurrentBuffer = 0;
-                    stars.UpdateStars(ref triangleAndPointShader);
+                    if (displayStars)
+                    {
+                        triangleAndPointShader.CurrentBuffer = 0;
+                        stars.UpdateStars(ref triangleAndPointShader);
+                        triangleAndPointShader.SendVBOData();
+                        triangleAndPointShader.SetVertexAttribPointerAndArrays();
+                        triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Points);
+                        triangleAndPointShader.DrawElements(PrimitiveType.Points);
+                    }
+
+                    triangleAndPointShader.CurrentBuffer = 1;
+                    spectrumBars.UpdateSpectrumBars(ref triangleAndPointShader, camera.Position.Z);
                     triangleAndPointShader.SendVBOData();
                     triangleAndPointShader.SetVertexAttribPointerAndArrays();
-                    triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Points);
-                    triangleAndPointShader.DrawElements(PrimitiveType.Points);
+                    triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Triangles);
+                    triangleAndPointShader.DrawElements(PrimitiveType.Triangles);
+
+                if (false)
+                {
+                    textureShader.Use();
+                    GL.Disable(EnableCap.DepthTest);
+                    GL.CullFace(CullFaceMode.Back);
+                    GL.FrontFace(FrontFaceDirection.Ccw);
+                    GL.Enable(EnableCap.CullFace);
+                    text.UpdateText(ref textureShader, "S", Size);
+                    text.SetActiveAndBindTexture();
+                    textureShader.CurrentBuffer = 0;
+                    //textureShader.SendVAData();
+                    textureShader.SendVBOData();
+                    textureShader.SetVertexAttribPointerAndArrays();
+                    textureShader.SetVector4("textColor", Vector4.One);
+                    textureShader.DrawElements(PrimitiveType.Triangles);
+                    //textureShader.DrawArrays(PrimitiveType.Triangles, 1);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.Disable(EnableCap.CullFace);
                 }
-
-                triangleAndPointShader.CurrentBuffer = 1;
-                spectrumBars.UpdateSpectrumBars(ref triangleAndPointShader, camera.Position.Z);
-                triangleAndPointShader.SendVBOData();
-                triangleAndPointShader.SetVertexAttribPointerAndArrays();
-                triangleAndPointShader.SetInt("primitiveType", (int)PrimitiveType.Triangles);
-                triangleAndPointShader.DrawElements(PrimitiveType.Triangles);
-
-                textureShader.Use();
-                text.UpdateText(ref textureShader, "Sean Dorff", Size);
-                textureShader.CurrentBuffer = 0;
-                textureShader.SendVAData();
-                textureShader.CurrentBuffer = 1;
-                textureShader.SendVAData();
-                textureShader.SetVertexAttribPointerAndArrays();
-                textureShader.SetVector4("textColor", Vector4.One);
-                textureShader.DrawArrays(PrimitiveType.Triangles, 0);
-
                 SwapBuffers();
 
                 base.OnRenderFrame(e);
@@ -311,6 +320,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 Dictionary<int, EBufferTypes> bufferTypes = new();
                 bufferTypes.Add(0, EBufferTypes.VertexArrayObject);
                 bufferTypes.Add(1, EBufferTypes.VertexArrayObject);
+                bufferTypes.Add(2, EBufferTypes.VertexArrayObject);
                 triangleAndPointShader = ShaderProgramFactory.BuildTriangleAndPointShaderProgram("shaders/shader.vert", "shaders/shader.frag", bufferTypes);
                 triangleAndPointShader.CurrentBuffer = 0;
                 triangleAndPointShader.Vertexes = new float[stars.StarVertexesCount];
@@ -320,8 +330,7 @@ namespace Sean_Dorff_s_Audio_Visualizer
                 triangleAndPointShader.Indexes = new uint[spectrumBars.SpectrumBarIndexesCount];
 
                 bufferTypes.Clear();
-                bufferTypes.Add(0, EBufferTypes.ArrayBuffer);
-                bufferTypes.Add(1, EBufferTypes.ArrayBuffer);
+                bufferTypes.Add(0, EBufferTypes.VertexArrayObject);
                 textureShader = ShaderProgramFactory.BuildTextureShaderProgram("shaders/textureShader.vert", "shaders/textureShader.frag", bufferTypes);
             }
         }

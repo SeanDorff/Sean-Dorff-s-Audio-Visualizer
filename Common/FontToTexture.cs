@@ -3,7 +3,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Reflection;
 
@@ -21,14 +20,15 @@ namespace Common
         private int textureHeight;
         private readonly int textureHandle;
         private bool disposedValue;
+        private readonly Bitmap bitmap;
 
         public int TextureHeight { get => textureHeight; }
         public int TextureWidth { get => textureWidth; }
         public int TextureHandle { get => textureHandle; }
         public string Glyphs { get => GLYPHS; }
         public int GlyphHeight { get => GLYPH_HEIGHT; }
-        public int GlyphWidth
-        { get => GLYPH_WIDTH; }
+        public int GlyphWidth { get => GLYPH_WIDTH; }
+        public Bitmap Bitmap { get => bitmap; }
 
         public FontToTexture()
         {
@@ -38,7 +38,7 @@ namespace Common
             {
                 int width = NextPow2(GLYPHS.Length * GLYPH_WIDTH);
                 int height = NextPow2(GLYPH_HEIGHT);
-                using Bitmap bitmap = new(width, height, SDIPixelFormat.Format32bppArgb);
+                bitmap = new(width, height, SDIPixelFormat.Format32bppArgb);
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
                     graphics.SmoothingMode = SmoothingMode.HighQuality;
@@ -47,7 +47,7 @@ namespace Common
                     for (int i = 0; i < GLYPHS.Length; i++)
                         graphics.DrawString(GLYPHS[i].ToString(), font, Brushes.White, new Point(i * GLYPH_WIDTH, 0));
                 }
-                int textureHandle = LoadTexture(bitmap);
+                //int textureHandle = LoadTexture(bitmap);
             }
         }
 
@@ -58,16 +58,39 @@ namespace Common
 #endif
             {
                 int textureHandle = GL.GenTexture();
+                GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, textureHandle);
-                BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, GLPixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-                bitmap.UnlockBits(data);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+                //BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, GLPixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, GLPixelFormat.Rgba, PixelType.UnsignedByte, GetPixelArray(ref bitmap));
+                //bitmap.UnlockBits(data);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
                 textureWidth = bitmap.Width;
                 textureHeight = bitmap.Height;
                 return textureHandle;
             }
+        }
+
+        private byte[] GetPixelArray(ref Bitmap bitmap)
+        {
+            Color color;
+            byte[] pixelArray = new byte[bitmap.Width * bitmap.Height * 4];
+            int arrayPointer = 0;
+            for (int y = 0; y < bitmap.Height; y++)
+                for (int x = 0; x < bitmap.Width; x++)
+                {
+                    color = bitmap.GetPixel(x, y);
+                    pixelArray[arrayPointer++] = color.R;
+                    pixelArray[arrayPointer++] = color.G;
+                    pixelArray[arrayPointer++] = color.B;
+                    pixelArray[arrayPointer++] = color.A;
+                }
+            return pixelArray;
         }
 
         private static int NextPow2(int target)

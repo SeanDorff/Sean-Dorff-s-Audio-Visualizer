@@ -54,6 +54,7 @@ namespace Common
                 bufferMappings = new SBufferMapping[bufferTypes.Count];
 
                 this.shaderProgramHandle = shaderProgramHandle;
+                Use();
                 this.uniformLocations = uniformLocations;
 
                 int vertexArrayObjectBufferCount = 0;
@@ -94,6 +95,7 @@ namespace Common
                             internalVANumber = bufferMappings[i].InternalBufferNumber;
                             ArrayBufferHandle = GL.GenVertexArray();
                             GL.BindVertexArray(ArrayBufferHandle);
+                            GL.BindBuffer(BufferTarget.ArrayBuffer, ArrayBufferHandle);
                             break;
                         default: // EBufferTypes.VertexArrayObject
                             internalVBONumber = bufferMappings[i].InternalBufferNumber;
@@ -134,7 +136,8 @@ namespace Common
             using (new DisposableStopwatch(MethodBase.GetCurrentMethod().Name, true))
 #endif
             {
-                // TODO: Implement
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ArrayBufferHandle);
+                GL.BufferData(BufferTarget.ArrayBuffer, ArrayBuffer.Length * sizeof(float), ArrayBuffer, BufferUsageHint.DynamicDraw);
             }
         }
 
