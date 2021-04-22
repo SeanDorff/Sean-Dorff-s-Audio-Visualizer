@@ -1,6 +1,9 @@
 # Sean Dorff's Audio Visualizer
 This Visual Studio solution taps into your Windows audio output or microphone input and visualizes it as a frequency spectrum. There's also a nice rotating star field in the background.
 
+# Follow-up project
+There's a follow-up project: [Sean Dorff's Audio Visualizer 2](https://github.com/SeanDorff/SeanDorffsAudioVisualizer2)
+
 # Releases & Download
 Untested releases can be found under the [Releases](https://github.com/SeanDorff/Sean-Dorff-s-Audio-Visualizer/releases) section.
 
